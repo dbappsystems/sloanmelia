@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SloanMelia — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --void:#03050a; --deep:#060b14; --panel:#0b1523; --card:#101e30;
@@ -20,48 +19,21 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;background:var(--void);color:var(--text);font-family:var(--fn);overflow-x:hidden}
-
-/* GRID BG */
 body::before{content:'';position:fixed;inset:0;
   background-image:linear-gradient(rgba(0,212,200,.03) 1px,transparent 1px),
   linear-gradient(90deg,rgba(0,212,200,.03) 1px,transparent 1px);
   background-size:40px 40px;pointer-events:none;z-index:0}
-
-/* ORBS */
 .orb{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;z-index:0;opacity:.25}
 .orb1{width:700px;height:700px;background:radial-gradient(#00d4c828,transparent 70%);top:-200px;right:-200px}
 .orb2{width:500px;height:500px;background:radial-gradient(#f5c84218,transparent 70%);bottom:-100px;left:-200px}
-
-/* LAYOUT */
 .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1}
-
-/* CARD */
 .card{width:100%;max-width:420px;background:var(--deep);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.6)}
-
-/* CARD HEADER */
 .card-header{padding:32px 32px 24px;border-bottom:1px solid var(--border);text-align:center;position:relative}
 .card-header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:2px;background:linear-gradient(90deg,var(--teal),var(--gold))}
 .logo{font-family:var(--head);font-size:24px;font-weight:800;color:var(--bright);letter-spacing:-.03em;margin-bottom:6px}
 .logo em{color:var(--teal);font-style:normal}
 .tagline{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
-
-/* TABS */
-.auth-tabs{display:flex;border-bottom:1px solid var(--border)}
-.auth-tab{flex:1;padding:14px;font-family:var(--fn);font-size:13px;font-weight:600;
-  background:transparent;border:none;color:var(--dim);cursor:pointer;
-  transition:all .2s;position:relative}
-.auth-tab.active{color:var(--teal)}
-.auth-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal)}
-.auth-tab:hover:not(.active){color:var(--soft)}
-
-/* FORM AREA */
 .card-body{padding:28px 32px 32px}
-
-/* PANEL SWITCHING */
-.auth-panel{display:none}
-.auth-panel.active{display:block}
-
-/* FORM ELEMENTS */
 .field{margin-bottom:18px}
 .field label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 .field input{width:100%;background:var(--panel);border:1.5px solid var(--wire);border-radius:10px;
@@ -69,69 +41,24 @@ body::before{content:'';position:fixed;inset:0;
   outline:none;transition:border-color .2s,box-shadow .2s}
 .field input::placeholder{color:var(--dim)}
 .field input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,212,200,.1)}
-
-/* BTN PRIMARY */
 .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),#00b8ad);
   border:none;border-radius:10px;font-family:var(--fn);font-size:14px;font-weight:700;
   color:var(--void);cursor:pointer;transition:all .2s;letter-spacing:.02em;margin-top:4px}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,200,.3)}
 .btn-primary:active{transform:translateY(0)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-
-/* DIVIDER */
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.divider span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);white-space:nowrap}
-
-/* GOOGLE BTN */
-.btn-google{width:100%;padding:13px;background:transparent;
-  border:1.5px solid var(--wire);border-radius:10px;
-  font-family:var(--fn);font-size:14px;font-weight:600;
-  color:var(--bright);cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;gap:10px}
-.btn-google:hover{border-color:var(--soft);background:rgba(255,255,255,.04)}
-.btn-google svg{flex-shrink:0}
-
-/* FORGOT */
-.forgot-link{display:block;text-align:right;margin-top:-10px;margin-bottom:18px;
-  font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);
-  text-decoration:none;transition:color .2s}
-.forgot-link:hover{color:var(--teal)}
-
-/* MESSAGE */
 .msg{padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:16px;display:none}
 .msg.error{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.3);color:#fca5a5}
 .msg.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);color:#86efac}
 .msg.show{display:block}
-
-/* LOADER */
 .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(3,5,10,.3);
   border-top-color:var(--void);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* FOOTER */
 .card-footer{padding:16px 32px;border-top:1px solid var(--border);text-align:center}
 .back-link{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--dim);
   text-decoration:none;transition:color .2s}
 .back-link:hover{color:var(--teal)}
 .back-link em{font-style:normal;color:var(--teal)}
-
-/* RESET BACK */
-.text-btn{background:none;border:none;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
-  color:var(--dim);cursor:pointer;padding:0;transition:color .2s;text-decoration:underline}
-.text-btn:hover{color:var(--teal)}
-
-/* WELCOME PANEL (post-login) */
-.welcome-panel{display:none;text-align:center;padding:10px 0}
-.welcome-icon{font-size:48px;margin-bottom:16px}
-.welcome-title{font-family:var(--head);font-size:22px;font-weight:800;color:var(--bright);margin-bottom:8px}
-.welcome-sub{font-size:13px;color:var(--soft);line-height:1.6;margin-bottom:24px}
-.btn-dashboard{display:inline-block;padding:13px 28px;
-  background:linear-gradient(135deg,var(--teal),#00b8ad);
-  border-radius:10px;font-family:var(--fn);font-size:14px;font-weight:700;
-  color:var(--void);text-decoration:none;transition:all .2s}
-.btn-dashboard:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,200,.3)}
-
 @media(max-width:480px){
   .card{border-radius:16px}
   .card-header{padding:24px 24px 20px}
@@ -147,111 +74,28 @@ body::before{content:'';position:fixed;inset:0;
 <div class="page">
   <div class="card">
 
-    <!-- HEADER -->
     <div class="card-header">
       <div class="logo"><em>Sloan</em>Melia.com</div>
       <div class="tagline">Private Dashboard Access</div>
     </div>
 
-    <!-- TABS -->
-    <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
-      <button class="auth-tab" onclick="switchTab('signup')">Create Account</button>
-    </div>
-
-    <!-- BODY -->
     <div class="card-body">
+      <div class="msg" id="msg-signin"></div>
 
-      <!-- SIGN IN PANEL -->
-      <div class="auth-panel active" id="panel-signin">
-        <div class="msg" id="msg-signin"></div>
-
-        <div class="field">
-          <label>Email Address</label>
-          <input type="email" id="signin-email" placeholder="sloan@sloanmelia.com" autocomplete="email">
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password"
-            onkeydown="if(event.key==='Enter') handleSignIn()">
-        </div>
-
-        <a href="#" class="forgot-link" onclick="switchTab('reset'); return false;">Forgot password?</a>
-
-        <button class="btn-primary" id="btn-signin" onclick="handleSignIn()">Sign In</button>
-
-        <div class="divider"><span>or continue with</span></div>
-
-        <button class="btn-google" onclick="handleGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18">
-            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-            <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
-          </svg>
-          Continue with Google
-        </button>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="signin-email" placeholder="sloan@sloanmelia.com" autocomplete="email">
       </div>
 
-      <!-- SIGN UP PANEL -->
-      <div class="auth-panel" id="panel-signup">
-        <div class="msg" id="msg-signup"></div>
-
-        <div class="field">
-          <label>Full Name</label>
-          <input type="text" id="signup-name" placeholder="Sloan Smith" autocomplete="name">
-        </div>
-
-        <div class="field">
-          <label>Email Address</label>
-          <input type="email" id="signup-email" placeholder="sloan@sloanmelia.com" autocomplete="email">
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="signup-password" placeholder="Create a strong password" autocomplete="new-password"
-            onkeydown="if(event.key==='Enter') handleSignUp()">
-        </div>
-
-        <button class="btn-primary" id="btn-signup" onclick="handleSignUp()">Create Account</button>
-
-        <div class="divider"><span>or continue with</span></div>
-
-        <button class="btn-google" onclick="handleGoogle()">
-          <svg width="18" height="18" viewBox="0 0 18 18">
-            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-            <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
-          </svg>
-          Continue with Google
-        </button>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') handleSignIn()">
       </div>
 
-      <!-- RESET PANEL -->
-      <div class="auth-panel" id="panel-reset">
-        <div class="msg" id="msg-reset"></div>
-
-        <p style="font-size:13px;color:var(--soft);line-height:1.6;margin-bottom:20px">
-          Enter the email address on your account and we'll send a password reset link.
-        </p>
-
-        <div class="field">
-          <label>Email Address</label>
-          <input type="email" id="reset-email" placeholder="sloan@sloanmelia.com">
-        </div>
-
-        <button class="btn-primary" id="btn-reset" onclick="handleReset()">Send Reset Link</button>
-
-        <div style="text-align:center;margin-top:16px">
-          <button class="text-btn" onclick="switchTab('signin')">← Back to Sign In</button>
-        </div>
-      </div>
-
+      <button class="btn-primary" id="btn-signin" onclick="handleSignIn()">Sign In</button>
     </div>
 
-    <!-- FOOTER -->
     <div class="card-footer">
       <a href="/" class="back-link">← Back to <em>sloanmelia.com</em></a>
     </div>
@@ -260,157 +104,61 @@ body::before{content:'';position:fixed;inset:0;
 </div>
 
 <script>
-// ═══ SUPABASE INIT ═══
-const SUPABASE_URL = 'https://gpktuflimoqeyxtwadsy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdwa3R1ZmxpbW9xZXl4dHdhZHN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2ODM2MDEsImV4cCI6MjA4NzI1OTYwMX0.q3RMeKEo17qXgt-a9ljtMfKJ46etHy4_rrj1cs64A4U';
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ═══ CHECK SESSION ON LOAD ═══
-window.addEventListener('load', async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    window.location.href = '/dashboard.html';
-  }
+// ═══ CHECK EXISTING SESSION ═══
+window.addEventListener('load', () => {
+  const token = localStorage.getItem('sm_token');
+  if (token) window.location.href = '/app.html';
 });
 
-// ═══ TAB SWITCHING ═══
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-
-  if (tab === 'signin') {
-    document.querySelectorAll('.auth-tab')[0].classList.add('active');
-    document.getElementById('panel-signin').classList.add('active');
-  } else if (tab === 'signup') {
-    document.querySelectorAll('.auth-tab')[1].classList.add('active');
-    document.getElementById('panel-signup').classList.add('active');
-  } else if (tab === 'reset') {
-    document.getElementById('panel-reset').classList.add('active');
-  }
-}
-
-// ═══ SHOW MESSAGE ═══
-function showMsg(id, text, type) {
-  const el = document.getElementById(id);
+// ═══ HELPERS ═══
+function showMsg(text, type) {
+  const el = document.getElementById('msg-signin');
   el.textContent = text;
-  el.className = `msg ${type} show`;
+  el.className = 'msg ' + type + ' show';
 }
-function hideMsg(id) {
-  document.getElementById(id).className = 'msg';
-}
-
-// ═══ SET LOADING ═══
-function setLoading(btnId, loading) {
-  const btn = document.getElementById(btnId);
-  if (loading) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loader"></span>';
-  } else {
-    btn.disabled = false;
-    btn.textContent = btnId === 'btn-signin' ? 'Sign In'
-      : btnId === 'btn-signup' ? 'Create Account'
-      : 'Send Reset Link';
-  }
+function setLoading(loading) {
+  const btn = document.getElementById('btn-signin');
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="loader"></span>' : 'Sign In';
 }
 
-// ═══ SIGN IN ═══
+// ═══ SIGN IN → Cloudflare Worker ═══
 async function handleSignIn() {
-  const email = document.getElementById('signin-email').value.trim();
+  const email    = document.getElementById('signin-email').value.trim();
   const password = document.getElementById('signin-password').value;
-  hideMsg('msg-signin');
 
   if (!email || !password) {
-    showMsg('msg-signin', 'Please enter your email and password.', 'error');
+    showMsg('Please enter your email and password.', 'error');
     return;
   }
 
-  setLoading('btn-signin', true);
+  setLoading(true);
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  try {
+    const res  = await fetch('/api/auth/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, password })
+    });
+    const data = await res.json();
 
-  if (error) {
-    setLoading('btn-signin', false);
-    showMsg('msg-signin', error.message, 'error');
-    return;
+    if (!res.ok) {
+      setLoading(false);
+      showMsg(data.error || 'Invalid credentials.', 'error');
+      return;
+    }
+
+    localStorage.setItem('sm_token',  data.token);
+    localStorage.setItem('sm_userId', data.userId);
+    localStorage.setItem('sm_email',  data.email);
+
+    showMsg('✓ Signed in! Loading your dashboard...', 'success');
+    setTimeout(() => window.location.href = '/app.html', 700);
+
+  } catch (e) {
+    setLoading(false);
+    showMsg('Connection error. Please try again.', 'error');
   }
-
-  showMsg('msg-signin', '✓ Signed in! Redirecting to your dashboard...', 'success');
-  setTimeout(() => window.location.href = '/dashboard.html', 800);
-}
-
-// ═══ SIGN UP ═══
-async function handleSignUp() {
-  const name = document.getElementById('signup-name').value.trim();
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-  hideMsg('msg-signup');
-
-  if (!name || !email || !password) {
-    showMsg('msg-signup', 'Please fill in all fields.', 'error');
-    return;
-  }
-  if (password.length < 8) {
-    showMsg('msg-signup', 'Password must be at least 8 characters.', 'error');
-    return;
-  }
-
-  setLoading('btn-signup', true);
-
-  const { data, error } = await sb.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: name } }
-  });
-
-  if (error) {
-    setLoading('btn-signup', false);
-    showMsg('msg-signup', error.message, 'error');
-    return;
-  }
-
-  setLoading('btn-signup', false);
-  showMsg('msg-signup',
-    '✓ Account created! Check your email to confirm your account, then sign in.',
-    'success');
-}
-
-// ═══ GOOGLE SSO ═══
-async function handleGoogle() {
-  const { data, error } = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + '/dashboard.html' }
-  });
-  if (error) {
-    const msgId = document.querySelector('.auth-panel.active .msg').id;
-    showMsg(msgId, 'Google sign-in failed. Make sure Google OAuth is enabled in Supabase.', 'error');
-  }
-}
-
-// ═══ PASSWORD RESET ═══
-async function handleReset() {
-  const email = document.getElementById('reset-email').value.trim();
-  hideMsg('msg-reset');
-
-  if (!email) {
-    showMsg('msg-reset', 'Please enter your email address.', 'error');
-    return;
-  }
-
-  setLoading('btn-reset', true);
-
-  const { error } = await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login.html'
-  });
-
-  setLoading('btn-reset', false);
-
-  if (error) {
-    showMsg('msg-reset', error.message, 'error');
-    return;
-  }
-
-  showMsg('msg-reset', '✓ Reset link sent! Check your inbox.', 'success');
 }
 </script>
 </body>
