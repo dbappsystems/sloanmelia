@@ -1,8 +1,5 @@
 # Cloudflare Pages redirects (replaces netlify.toml)
 
-# Public profile
-/                    /index.html           200
-
 # Dashboard / App
 /app                 /app.html             200
 /dashboard           /app.html             302
