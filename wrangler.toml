@@ -1,0 +1,21 @@
+# SloanMelia — Cloudflare Pages + Workers config
+# Deploy via: Cloudflare Dashboard → Pages → dbappsystems/sloanmelia
+
+name = "sloanmelia"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sloanmelia-db"
+database_id = "12b3d0ba-dfcc-4982-a7f9-84a9dd1131a4"
+
+[[r2_buckets]]
+binding = "VAULT"
+bucket_name = "sloanmelia-vault"
+
+# Secrets (set in Cloudflare Dashboard → Pages → Settings → Environment variables)
+# SM_EMAIL      = sloan@sloanmelia.com
+# SM_PASSWORD   = (set a strong password — never put here)
+# JWT_SECRET    = (random 32-char string — never put here)
+# ANTHROPIC_API_KEY = (your Claude API key — never put here)

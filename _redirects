@@ -1,0 +1,15 @@
+# Cloudflare Pages redirects (replaces netlify.toml)
+
+# Public profile
+/                    /index.html           200
+
+# Dashboard / App
+/app                 /app.html             200
+/dashboard           /app.html             302
+/dashboard.html      /app.html             302
+
+# Study Library redirects
+/study-library.html  /app.html             302
+/studylibrary.html   /app.html             302
+/studylibrary        /app.html             302
+/study-library       /app.html             302
