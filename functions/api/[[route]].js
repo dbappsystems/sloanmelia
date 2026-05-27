@@ -27,8 +27,8 @@ export async function onRequest(context) {
     if (path === 'colleges'     || path.startsWith('colleges/'))     return handleColleges(request, env, path);
     if (path === 'scholarships' || path.startsWith('scholarships/')) return handleScholarships(request, env, path);
     if (path === 'grades'       || path.startsWith('grades/'))       return handleGrades(request, env, path);
-    if (path === 'coach')         return handleCoach(request, env);
-    if (path === 'vault/upload')  return handleVaultUpload(request, env);
+    if (path === 'coach')          return handleCoach(request, env);
+    if (path === 'vault/upload')   return handleVaultUpload(request, env);
     if (path === 'vault/download') return handleVaultDownload(request, env, url);
     return json({ error: 'Not found' }, 404);
   } catch (e) {
@@ -102,7 +102,6 @@ async function handleDocuments(request, env, path) {
     return json({ id: newId }, 201);
   }
   if (request.method === 'DELETE' && id) {
-    // Delete R2 object if file_key exists
     const { results } = await db.prepare(
       'SELECT file_key FROM documents WHERE id = ? AND user_id = ?'
     ).bind(id, userId).all();
@@ -228,20 +227,16 @@ async function handleGrades(request, env, path) {
   }
   if (request.method === 'POST') {
     const b = await request.json();
-    // Support bulk insert (array) or single row
-    const rows = Array.isArray(b) ? b : [b];
-    for (const row of rows) {
-      const newId = crypto.randomUUID();
-      await db.prepare(
-        'INSERT INTO grades (id, user_id, course_name, grade_letter, grade_points, credit_hours, semester, grade_year, is_ap, is_honors, source) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
-      ).bind(
-        newId, userId,
-        row.course_name, row.grade_letter || null, row.grade_points ?? null,
-        row.credit_hours || 1, row.semester || null, row.grade_year || null,
-        row.is_ap ? 1 : 0, row.is_honors ? 1 : 0, row.source || 'manual'
-      ).run();
-    }
-    return json({ inserted: rows.length }, 201);
+    const newId = crypto.randomUUID();
+    await db.prepare(
+      'INSERT INTO grades (id, user_id, course_name, grade_letter, grade_points, credit_hours, semester, grade_year, is_ap, is_honors, source) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+    ).bind(
+      newId, userId,
+      b.course_name, b.grade_letter || null, b.grade_points ?? null,
+      b.credit_hours || 1, b.semester || null, b.grade_year || null,
+      b.is_ap ? 1 : 0, b.is_honors ? 1 : 0, b.source || 'manual'
+    ).run();
+    return json({ id: newId }, 201);
   }
   if (request.method === 'DELETE' && id) {
     await db.prepare('DELETE FROM grades WHERE id = ? AND user_id = ?').bind(id, userId).run();
@@ -257,7 +252,6 @@ async function handleVaultUpload(request, env) {
   const file = formData.get('file');
   const docId = formData.get('docId') || crypto.randomUUID();
   if (!file) return json({ error: 'No file provided' }, 400);
-
   const key = `sloan-001/${docId}/${file.name}`;
   await env.VAULT.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
   return json({ key, size: file.size }, 201);
@@ -299,6 +293,6 @@ Be warm, encouraging, and specific to Sloan's goals. For essays, lead with Patie
 
   const data = await res.json();
   if (!res.ok) return json({ error: data.error?.message || 'Claude API error' }, 502);
-  // Return in Anthropic format so app.html can use data.content[0].text unchanged
-  return json({ content: [{ type: 'text', text: data.content?.[0]?.text || '' }] });
+  // Return content as a flat string so app.html can use data.content directly
+  return json({ content: data.content?.[0]?.text || '' });
 }
