@@ -1,7 +1,7 @@
 // SloanMelia — Cloudflare Pages Function
 // Routes: auth, documents, achievements, colleges, scholarships, grades, coach, vault
 // Bindings: DB (D1), VAULT (R2)
-// Secrets: SM_EMAIL, SM_PASSWORD, JWT_SECRET, ANTHROPIC_API_KEY
+// Secrets: SM_EMAIL, SM_PASSWORD, ADMIN_EMAIL, ADMIN_PASSWORD, JWT_SECRET, ANTHROPIC_API_KEY
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -30,13 +30,14 @@ export async function onRequest(context) {
     if (path === 'coach')          return handleCoach(request, env);
     if (path === 'vault/upload')   return handleVaultUpload(request, env);
     if (path === 'vault/download') return handleVaultDownload(request, env, url);
+    if (path === 'auth/me')        return handleMe(request, payload);
     return json({ error: 'Not found' }, 404);
   } catch (e) {
     return json({ error: e.message }, 500);
   }
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
+// --- HELPERS ------------------------------------------------------------------
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -68,19 +69,32 @@ async function verifyToken(token, secret) {
   } catch { return false; }
 }
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
+// --- AUTH ---------------------------------------------------------------------
 
 async function handleLogin(request, env) {
   const { email, password } = await request.json();
   if (!email || !password) return json({ error: 'Email and password required' }, 400);
-  if (email === env.SM_EMAIL && password === env.SM_PASSWORD) {
-    const token = await signToken({ userId: 'sloan-001', email }, env.JWT_SECRET);
-    return json({ token, userId: 'sloan-001', email });
+
+  // Admin god mode
+  if (email === env.ADMIN_EMAIL && password === env.ADMIN_PASSWORD) {
+    const token = await signToken({ userId: 'admin-001', email, role: 'admin' }, env.JWT_SECRET);
+    return json({ token, userId: 'admin-001', email, role: 'admin' });
   }
+
+  // Sloan
+  if (email === env.SM_EMAIL && password === env.SM_PASSWORD) {
+    const token = await signToken({ userId: 'sloan-001', email, role: 'student' }, env.JWT_SECRET);
+    return json({ token, userId: 'sloan-001', email, role: 'student' });
+  }
+
   return json({ error: 'Invalid credentials' }, 401);
 }
 
-// ─── DOCUMENTS ────────────────────────────────────────────────────────────────
+async function handleMe(request, payload) {
+  return json({ userId: payload.userId, email: payload.email, role: payload.role || 'student' });
+}
+
+// --- DOCUMENTS ----------------------------------------------------------------
 
 async function handleDocuments(request, env, path) {
   const db = env.DB;
@@ -114,7 +128,7 @@ async function handleDocuments(request, env, path) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
-// ─── ACHIEVEMENTS ─────────────────────────────────────────────────────────────
+// --- ACHIEVEMENTS -------------------------------------------------------------
 
 async function handleAchievements(request, env, path) {
   const db = env.DB;
@@ -142,7 +156,7 @@ async function handleAchievements(request, env, path) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
-// ─── COLLEGES ─────────────────────────────────────────────────────────────────
+// --- COLLEGES -----------------------------------------------------------------
 
 async function handleColleges(request, env, path) {
   const db = env.DB;
@@ -177,7 +191,7 @@ async function handleColleges(request, env, path) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
-// ─── SCHOLARSHIPS ─────────────────────────────────────────────────────────────
+// --- SCHOLARSHIPS -------------------------------------------------------------
 
 async function handleScholarships(request, env, path) {
   const db = env.DB;
@@ -212,7 +226,7 @@ async function handleScholarships(request, env, path) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
-// ─── GRADES ───────────────────────────────────────────────────────────────────
+// --- GRADES -------------------------------------------------------------------
 
 async function handleGrades(request, env, path) {
   const db = env.DB;
@@ -245,7 +259,7 @@ async function handleGrades(request, env, path) {
   return json({ error: 'Method not allowed' }, 405);
 }
 
-// ─── VAULT (R2) ───────────────────────────────────────────────────────────────
+// --- VAULT (R2) ---------------------------------------------------------------
 
 async function handleVaultUpload(request, env) {
   const formData = await request.formData();
@@ -267,7 +281,7 @@ async function handleVaultDownload(request, env, url) {
   });
 }
 
-// ─── AI COACH ────────────────────────────────────────────────────────────────
+// --- AI COACH ----------------------------------------------------------------
 
 async function handleCoach(request, env) {
   const { messages, vaultContext } = await request.json();
@@ -276,7 +290,7 @@ async function handleCoach(request, env) {
 - Name: Sloan Smith | School: Alton High School, Alton, Illinois
 - GPA: 3.84 weighted / 3.55 unweighted | Target: PhD in Forensic Psychology | Graduation: May 2026
 - Courses: AP Psychology, AP Statistics, CP English 4 AP, Human Body Systems PLTW 2, Biomedical Internship, Sociology, Environmental Science, Spanish 2A & 2B
-- Key achievement: Patient Enrichment Program — FOUNDER (annual hospital enrichment drive, her centerpiece story)
+- Key achievement: Patient Enrichment Program -- FOUNDER (annual hospital enrichment drive, her centerpiece story)
 - Also: Mu Alpha Theta, Link Crew Mentor, Salvation Army Volunteer, Church Nursery Volunteer, Math Peer Tutor
 - Target schools: SIUE, University of Illinois Springfield, Missouri Baptist University, Saint Louis University
 Be warm, encouraging, and specific to Sloan's goals. For essays, lead with Patient Enrichment Program.${vaultContext ? '\n\nContext:\n' + vaultContext : ''}`;
@@ -293,6 +307,5 @@ Be warm, encouraging, and specific to Sloan's goals. For essays, lead with Patie
 
   const data = await res.json();
   if (!res.ok) return json({ error: data.error?.message || 'Claude API error' }, 502);
-  // Return content as a flat string so app.html can use data.content directly
   return json({ content: data.content?.[0]?.text || '' });
 }
