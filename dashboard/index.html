@@ -33,6 +33,7 @@ textarea.input{resize:vertical;min-height:80px;}
 .card-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;margin-bottom:0.3rem;}
 .badge{font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;display:inline-block;}
 .badge-teal{background:#d0eae8;color:var(--teal);}.badge-gold{background:#faecd0;color:#8a5a10;}
+.badge-ink{background:#e8e0d8;color:var(--ink);}
 .badge-green{background:#d0ead0;color:var(--green);}.badge-blue{background:#d0daea;color:var(--blue);}
 .badge-purple{background:#e0d0ea;color:var(--purple);}.badge-red{background:#ead0d0;color:var(--red);}
 .badge-gray{background:#e8e0d8;color:var(--dim);}
@@ -68,6 +69,7 @@ textarea.input{resize:vertical;min-height:80px;}
 .stat-card{background:var(--white);border:1px solid var(--faint);padding:1.2rem;text-align:center;border-top:3px solid var(--ink);}
 .stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--gold);display:block;line-height:1;}
 .stat-lbl{font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);margin-top:0.3rem;display:block;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;}
 .section-label{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;}
 .section-label::before{content:'';display:block;width:20px;height:1px;background:var(--gold);}
@@ -108,6 +110,7 @@ textarea.input{resize:vertical;min-height:80px;}
   .sidebar.open{transform:translateX(0);}.sidebar-overlay.open{display:block;}
   .main-area{margin-left:0;padding-top:3rem;}
   .login-screen{grid-template-columns:1fr;}.login-left{display:none;}
+  .grid2{grid-template-columns:1fr;}
 }
 .info-box{background:var(--cream);border-left:4px solid var(--gold);padding:1rem 1.2rem;font-size:0.88rem;line-height:1.65;margin-bottom:1rem;}
 .info-box strong{display:block;font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;}
@@ -116,6 +119,8 @@ textarea.input{resize:vertical;min-height:80px;}
 .grad-banner-text{flex:1;}
 .grad-banner-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:var(--gold);line-height:1.2;}
 .grad-banner-sub{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:0.25rem;}
+.progress-bar{height:6px;background:var(--faint);overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);transition:width 0.5s;}
 </style>
 </head>
 <body>
@@ -130,6 +135,78 @@ function calcGPA(grades){
   const cr=e.reduce((s,g)=>s+g.credit_hours,0);
   return cr>0?Math.round((pts/cr)*1000)/1000:null;
 }
+const SRC={OpenStax:{label:'OpenStax',badge:'badge-teal',color:'var(--teal)'},LibreTexts:{label:'LibreTexts',badge:'badge-blue',color:'var(--blue)'},NOBA:{label:'NOBA Project',badge:'badge-purple',color:'var(--purple)'},Frontiers:{label:'Frontiers OA',badge:'badge-green',color:'var(--green)'},SSRN:{label:'SSRN Free',badge:'badge-ink',color:'var(--ink)'},APA:{label:'APA Official',badge:'badge-gold',color:'var(--gold)'},Tool:{label:'Free Tool',badge:'badge-gold',color:'#c8922a'},Poster:{label:'SloanMelia Ref',badge:'badge-teal',color:'var(--teal)'}};
+const YEARS=['All','📌 Reference Posters','🌱 Freshman','🌿 Sophomore','🌳 Junior','🎓 Senior','🔬 Master’s','🏛️ Doctoral','⚡ Research Tools'];
+const YEAR_COLOR={'📌 Reference Posters':'var(--teal)','🌱 Freshman':'var(--green)','🌿 Sophomore':'#2a7a4a','🌳 Junior':'var(--teal)','🎓 Senior':'var(--gold)','🔬 Master’s':'var(--blue)','🏛️ Doctoral':'var(--purple)','⚡ Research Tools':'#c8922a'};
+const YEAR_BADGE={'📌 Reference Posters':'badge-teal','🌱 Freshman':'badge-green','🌿 Sophomore':'badge-green','🌳 Junior':'badge-teal','🎓 Senior':'badge-gold','🔬 Master’s':'badge-blue','🏛️ Doctoral':'badge-purple','⚡ Research Tools':'badge-gold'};
+const STUDY_TOPICS=[
+{id:1,year:'📌 Reference Posters',title:'Brain & Neuroscience',src:'Poster',url:'',desc:'The biological foundation of behavior, emotion, and criminal mind.',concepts:['Limbic system and emotional regulation','Prefrontal cortex and impulse control','Neuroplasticity and trauma','Brain imaging in forensic contexts','Psychopathy and brain differences','Neurotransmitters and behavior']},
+{id:2,year:'📌 Reference Posters',title:'DSM-5 Diagnostic Reference',src:'Poster',url:'',desc:'Mental disorder classification system used in forensic evaluations.',concepts:['Multiaxial assessment replaced by specifiers','Personality disorder clusters A/B/C','Psychotic disorder spectrum','Trauma and stressor-related disorders','Substance use disorder criteria','Malingering vs genuine disorder']},
+{id:3,year:'📌 Reference Posters',title:'Theorists Timeline',src:'Poster',url:'',desc:'From Freud to modern forensic psychology pioneers.',concepts:['Freud: unconscious and defense mechanisms','Skinner: behavioral reinforcement','Bandura: social learning theory','Kohlberg: moral development stages','Hare: psychopathy assessment (PCL-R)','Seligman: learned helplessness']},
+{id:4,year:'📌 Reference Posters',title:'Research Methods & Statistics',src:'Poster',url:'',desc:'Scientific foundation of psychological research.',concepts:['Experimental vs correlational design','Validity: internal and external','Reliability: test-retest, inter-rater','Statistical significance (p-value)','Effect size and practical significance','Ethical research principles (APA)']},
+{id:5,year:'📌 Reference Posters',title:'Defense Mechanisms',src:'Poster',url:'',desc:'Psychological defenses relevant to criminal behavior analysis.',concepts:['Repression: unconscious blocking','Rationalization: justifying actions','Projection: attributing to others','Denial: refusing to acknowledge','Displacement: redirecting emotion','Sublimation: channeling productively']},
+{id:6,year:'📌 Reference Posters',title:'Human Development',src:'Poster',url:'',desc:'Lifespan development theories critical to forensic assessment.',concepts:["Erikson's 8 psychosocial stages","Piaget's cognitive stages","Vygotsky's zone of proximal development",'Attachment theory (Bowlby)','Adverse childhood experiences (ACEs)','Adolescent brain development']},
+{id:7,year:'📌 Reference Posters',title:'Cognitive Biases',src:'Poster',url:'',desc:'How thinking errors affect judgment, perception, and testimony.',concepts:['Confirmation bias in investigation','Hindsight bias in evaluation','Availability heuristic','Anchoring effect in assessment','Eyewitness memory fallibility','Implicit bias in the justice system']},
+{id:8,year:'📌 Reference Posters',title:'APA Ethics Code',src:'Poster',url:'https://www.apa.org/ethics/code',desc:'Professional ethical obligations guiding all psychologists.',concepts:['Informed consent requirements','Confidentiality and its limits','Dual relationship avoidance','Competence boundaries','Accurate test reporting','Mandatory reporting obligations']},
+{id:17,year:'🌱 Freshman',title:'Introduction to Psychology',src:'OpenStax',url:'https://openstax.org/details/books/psychology-2e',desc:'The gateway course. Brain, behavior, development, disorders, and DSM-5 overview.',concepts:['Biological bases of behavior','States of consciousness','Learning theory','Memory and cognition','Psychological disorders overview','Social psychology basics']},
+{id:18,year:'🌱 Freshman',title:'Introduction to Sociology',src:'OpenStax',url:'https://openstax.org/details/books/introduction-sociology-3e',desc:'Social systems, crime, inequality, and the forces that shape human behavior.',concepts:["Durkheim's social facts",'Social stratification','Deviance and crime theory','Race, class, and gender','Social institutions','Socialization and identity']},
+{id:19,year:'🌱 Freshman',title:'Introduction to Statistics',src:'OpenStax',url:'https://openstax.org/details/books/introductory-statistics',desc:'The math language of psychology research. Every PhD defense uses statistics.',concepts:['Descriptive statistics','Probability foundations','Hypothesis testing','Confidence intervals','Chi-square and t-tests','Data visualization']},
+{id:20,year:'🌱 Freshman',title:'College Algebra',src:'OpenStax',url:'https://openstax.org/details/books/college-algebra-2e',desc:'The mathematical scaffolding beneath statistics and quantitative reasoning.',concepts:['Linear equations and functions','Polynomial and rational functions','Exponential and logarithmic functions','Systems of equations','Sequences and series','Matrix basics']},
+{id:21,year:'🌱 Freshman',title:'Introduction to Biology',src:'OpenStax',url:'https://openstax.org/details/books/concepts-biology',desc:'Cell biology, genetics, evolution, and body systems. Gateway to neuroscience.',concepts:['Cell structure and function','DNA, genes, and heredity','Evolution by natural selection','Nervous system basics','Hormones and endocrine system','Genetics and behavior']},
+{id:22,year:'🌱 Freshman',title:'Introduction to Philosophy',src:'OpenStax',url:'https://openstax.org/details/books/introduction-philosophy',desc:'Free will, moral responsibility, and consciousness.',concepts:['Logic and argumentation','Free will vs. determinism','Moral responsibility','Consciousness and mind','Ethics foundations','Epistemology']},
+{id:23,year:'🌱 Freshman',title:'U.S. History',src:'OpenStax',url:'https://openstax.org/details/books/us-history',desc:'The legal, social, and political context in which American criminal justice evolved.',concepts:['Constitutional foundations','Civil rights movements','Criminal justice history','Social reform movements','Federal vs. state law','Policy and legislation evolution']},
+{id:24,year:'🌱 Freshman',title:'English Composition & Academic Writing',src:'LibreTexts',url:'https://human.libretexts.org/Bookshelves/Composition',desc:'APA papers, dissertation chapters, and expert witness reports require excellent writing.',concepts:['Thesis and argument development','Evidence and citation','APA formatting basics','Research paper structure','Revision strategies','Academic voice and tone']},
+{id:25,year:'🌱 Freshman',title:'Introduction to Anthropology',src:'OpenStax',url:'https://openstax.org/details/books/introduction-anthropology',desc:'Human diversity, culture, and behavior across societies.',concepts:['Four fields of anthropology','Cultural relativism','Human evolution','Language and communication','Social organization','Diversity and identity']},
+{id:26,year:'🌿 Sophomore',title:'Research Methods in Psychology',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Research_Methods_in_Psychology',desc:'The scientific method applied to human behavior.',concepts:['Experimental design','Correlational research','Survey methods','Ethical research standards','Reliability and validity','IRB and participant protection']},
+{id:27,year:'🌿 Sophomore',title:'Lifespan Developmental Psychology',src:'OpenStax',url:'https://openstax.org/details/books/lifespan-development',desc:"Erikson, Piaget, Vygotsky, ACEs, adolescent brain.",concepts:["Erikson's psychosocial stages","Piaget's cognitive development",'Attachment theory (Bowlby)','Adverse childhood experiences (ACEs)','Adolescent brain and risk-taking','Aging and neurological change']},
+{id:28,year:'🌿 Sophomore',title:'Abnormal Psychology',src:'NOBA',url:'https://nobaproject.com/textbooks/introduction-to-psychology-the-full-noba-collection',desc:'The DSM-5 in clinical depth.',concepts:['Anxiety and mood disorders','Psychotic spectrum disorders','Personality disorders in depth','Trauma-related disorders','Neurodevelopmental disorders','Differential diagnosis basics']},
+{id:29,year:'🌿 Sophomore',title:'Behavioral Neuroscience',src:'OpenStax',url:'https://openstax.org/details/books/introduction-behavioral-neuroscience',desc:'Brain-behavior relationships, neuroimaging, psychopathy neuroscience.',concepts:['Neuron structure and function','Nervous system organization','Sensation and perception','Stress and the brain','Sleep and biological rhythms','Psychopathology and the brain']},
+{id:30,year:'🌿 Sophomore',title:'Anatomy & Physiology',src:'OpenStax',url:'https://openstax.org/details/books/anatomy-and-physiology-2e',desc:'Body systems, nervous system deep-dive, hormones, and pharmacology foundations.',concepts:['Nervous system anatomy','Endocrine system and hormones','Cardiovascular system','Immune system basics','Sensory systems','Reproductive system basics']},
+{id:31,year:'🌿 Sophomore',title:'Introduction to Criminal Justice',src:'LibreTexts',url:'https://crimj.libretexts.org/Bookshelves/Introduction_to_Criminal_Justice',desc:'The system Sloan will spend her career working inside.',concepts:['History of criminal justice','Police and law enforcement','Court system and prosecution','Corrections and incarceration','Juvenile justice system','Criminal justice policy']},
+{id:32,year:'🌿 Sophomore',title:'Social Psychology',src:'NOBA',url:'https://nobaproject.com/modules/social-psychology',desc:'Conformity, obedience, group dynamics, prejudice.',concepts:['Attitude formation and change','Social influence and conformity','Obedience to authority (Milgram)','Group dynamics and groupthink','Prejudice and stereotyping','Prosocial behavior and altruism']},
+{id:33,year:'🌿 Sophomore',title:'Introduction to Criminology',src:'LibreTexts',url:'https://crimj.libretexts.org/Bookshelves/Criminology',desc:'Why people commit crime. The theoretical backbone of forensic practice.',concepts:['Classical and positivist criminology','Strain and anomie theories','Labeling and social reaction','Rational choice theory','Biological theories of crime','Feminist criminology']},
+{id:34,year:'🌳 Junior',title:'Forensic Psychology: Introduction',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Forensic_Psychology',desc:'The first dedicated forensic course.',concepts:['History of forensic psychology','Competency to stand trial','Criminal responsibility assessment','Civil forensic applications','Juvenile forensic evaluation','Expert witness foundations']},
+{id:35,year:'🌳 Junior',title:'Cognitive Psychology',src:'NOBA',url:'https://nobaproject.com/modules/cognitive-psychology',desc:'Memory, attention, decision-making, eyewitness reliability.',concepts:['Memory encoding and retrieval','Eyewitness memory fallibility','Attention and perception','Executive function','Language and thought','Decision-making and judgment']},
+{id:36,year:'🌳 Junior',title:'Personality Theories',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Personality_Psychology',desc:'Why people are who they are. Foundation for criminal profiling.',concepts:['Psychoanalytic theories','Trait theories (Big Five)','Humanistic psychology','Behavioral and social learning','Personality disorders','PCL-R and dark triad traits']},
+{id:37,year:'🌳 Junior',title:'Psychopharmacology',src:'LibreTexts',url:'https://med.libretexts.org/Bookshelves/Pharmacology_and_Neuroscience',desc:'How substances alter psychology and behavior.',concepts:['Pharmacokinetics basics','CNS depressants and stimulants','Antipsychotic medications','Antidepressants and mood stabilizers','Substance use disorders','Drug-induced psychosis']},
+{id:38,year:'🌳 Junior',title:'Advanced Statistics for Behavioral Sciences',src:'OpenStax',url:'https://openstax.org/details/books/introductory-statistics',desc:'ANOVA, regression, effect size.',concepts:['Analysis of Variance (ANOVA)','Multiple regression','Factor analysis','Non-parametric tests','Effect size and power','Statistical software (JASP/SPSS)']},
+{id:39,year:'🌳 Junior',title:'Learning & Behavior',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Behavioral_Psychology',desc:'Classical and operant conditioning, behavioral modification.',concepts:['Classical conditioning (Pavlov)','Operant conditioning (Skinner)','Reinforcement schedules','Observational learning','Behavioral modification','Token economies in corrections']},
+{id:40,year:'🌳 Junior',title:'Law & Psychology: Advanced',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'Miranda rights, interrogation psychology, Daubert standards.',concepts:['Miranda rights and false confessions','Interrogation psychology','Daubert and Frye standards','Expert testimony admissibility','Jury psychology and decision-making','Trial consultant roles']},
+{id:41,year:'🌳 Junior',title:'Multicultural Psychology',src:'OpenStax',url:'https://openstax.org/details/books/introduction-anthropology',desc:'Cultural competency in forensic practice.',concepts:['Cultural humility and competence','Intersectionality of identities','Race and the justice system','Culturally valid assessment','Bias in psychological testing','Advocacy and social justice']},
+{id:42,year:'🎓 Senior',title:'Psychological Testing & Assessment',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Psychological_Testing_and_Assessment',desc:'Intelligence tests, personality inventories, projective tests.',concepts:['Reliability and validity in testing','Intelligence testing (WAIS)','Personality inventories (MMPI-2-RF)','Neuropsychological screening','Malingering and response bias','Forensic report writing']},
+{id:43,year:'🎓 Senior',title:'APA Ethics Code (Full Text)',src:'APA',url:'https://www.apa.org/ethics/code',desc:"APA's complete ethical code.",concepts:['General principles (5 core)','Informed consent standards','Confidentiality and privilege','Multiple relationships','Assessment ethics','Forensic activities standards']},
+{id:44,year:'🎓 Senior',title:'Advanced Psychopathology',src:'Frontiers',url:'https://www.frontiersin.org/journals/psychiatry',desc:'DSM-5 in clinical depth, differential diagnosis in forensic contexts.',concepts:['Complex differential diagnosis','Personality pathology in forensic settings','Psychosis and criminal behavior','Trauma and dissociation','Malingering vs. genuine disorder','Neurodevelopmental disorders in justice']},
+{id:45,year:'🎓 Senior',title:'Psychopathology & Criminal Behavior',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'The bridge between clinical diagnosis and criminal behavior.',concepts:['Antisocial personality disorder','Psychopathy and recidivism','Mental illness and violence myth','Substance disorders and crime','Competency and criminal responsibility','Risk assessment instruments']},
+{id:46,year:'🎓 Senior',title:'Research Design & Thesis Preparation',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Research_Methods_in_Psychology',desc:'How to design studies that become dissertation chapters.',concepts:['Literature review methodology','Research question formulation','IRB application process','Qualitative vs. quantitative methods','Mixed methods design','Academic writing and APA 7th ed.']},
+{id:47,year:'🎓 Senior',title:'Abnormal Psychology: Special Populations',src:'NOBA',url:'https://nobaproject.com/modules/disorders-of-childhood',desc:'Children, adolescents, elderly, and incarcerated populations.',concepts:['Childhood and adolescent disorders','Geriatric psychopathology','Intellectual and developmental disabilities','Forensic assessment of special populations','Cultural considerations','Trauma in special populations']},
+{id:48,year:"🔬 Master's",title:'Forensic Assessment & Evaluation',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'PCL-R, HCR-20, MMPI-2-RF, STATIC-99 in forensic contexts.',concepts:['Competency to stand trial (CAST-MR)','Criminal responsibility (MSE)','PCL-R psychopathy assessment','Violence risk: HCR-20, VRAG','Sex offender risk: STATIC-99','Neuropsychological battery in forensics']},
+{id:49,year:"🔬 Master's",title:'Advanced Psychopathology Graduate',src:'Frontiers',url:'https://www.frontiersin.org/journals/psychiatry',desc:'Current clinical research on disorders seen in forensic populations.',concepts:['Severe mental illness in forensic settings','Personality disorders in offender populations','Trauma spectrum in justice-involved','Neurodevelopmental disorders and culpability','Substance use co-occurring disorders','Treatment-resistant conditions']},
+{id:50,year:"🔬 Master's",title:'Risk Assessment & Violence Prediction',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'Actuarial vs. structured professional judgment. SVP evaluations.',concepts:['Historical-Clinical-Risk (HCR-20 V3)','Violence Risk Appraisal Guide (VRAG)','Static vs. dynamic risk factors','Sex offender risk instruments','Protective factors (SAPROF)','Base rates and decision-making']},
+{id:51,year:"🔬 Master's",title:'Mental Health Law',src:'SSRN',url:'https://papers.ssrn.com/sol3/topten/topTenResults.cfm?groupingId=2659941&netorjrnl=jrnl',desc:'Case law, competency standards, civil commitment, NGRI.',concepts:['Competency to stand trial: Dusky standard',"NGRI: M'Naghten and ALI tests",'Civil commitment standards','Outpatient commitment laws','HIPAA and privileged communication','ADA and disability in court']},
+{id:52,year:"🔬 Master's",title:'Juvenile Forensic Psychology',src:'Frontiers',url:'https://www.frontiersin.org/journals/child-and-adolescent-psychiatry',desc:'Adolescent brain science, juvenile justice system.',concepts:['Adolescent brain immaturity (Roper v. Simmons)','Juvenile competency standards','Transfer to adult court assessment','Restorative justice for youth','Risk assessment for juveniles (YLS/CMI)','Trauma-informed juvenile justice']},
+{id:53,year:"🔬 Master's",title:'Trauma & Crisis Intervention',src:'Frontiers',url:'https://www.frontiersin.org/journals/psychology',desc:'PTSD, complex trauma, victim psychology, crisis evaluation.',concepts:['PTSD diagnostic criteria','Complex trauma and C-PTSD','Trauma-informed care principles','Crisis intervention models','Victim assessment and support','Secondary traumatic stress in practitioners']},
+{id:54,year:"🔬 Master's",title:'Expert Witness Testimony & Report Writing',src:'APA',url:'https://www.apa.org/about/division/div41',desc:'How to write a report a judge will actually read.',concepts:['Forensic report structure and standards','Objectivity vs. advocacy','Direct examination techniques','Cross-examination preparation','Daubert challenges','Communicating science to laypersons']},
+{id:55,year:"🔬 Master's",title:'Correctional Psychology',src:'Frontiers',url:'https://www.frontiersin.org/journals/psychology',desc:'Treatment in prison settings, recidivism reduction.',concepts:['Risk-Need-Responsivity model','Cognitive behavioral treatment (CBT)','Therapeutic communities','Reentry and recidivism','Special housing units (SHU) psychology','Correctional staff mental health']},
+{id:56,year:"🔬 Master's",title:'Advanced Research Methods (Graduate)',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Research_Methods_in_Psychology',desc:'Multivariate analysis, structural equation modeling, meta-analysis.',concepts:['Multiple regression and ANCOVA','Factor analysis','Structural equation modeling (SEM)','Meta-analysis methodology','Mixed methods integration','Grant proposal writing']},
+{id:57,year:'🏛️ Doctoral',title:'Dissertation Research Design',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology/Research_Methods_in_Psychology',desc:'Designing original studies that advance the field.',concepts:['Forming an original research question','Systematic literature review','IRB and human subjects protection','Dissertation proposal structure','Methodology: quant vs. qual vs. mixed','Defending a research design']},
+{id:58,year:'🏛️ Doctoral',title:'Advanced Quantitative Methods',src:'Tool',url:'https://jasp-stats.org',desc:'Bayesian statistics, multivariate analysis, JASP software (free).',concepts:['Bayesian vs. frequentist statistics','JASP: free SPSS alternative','Multilevel modeling','Longitudinal data analysis','Structural equation modeling','Open science and reproducibility']},
+{id:59,year:'🏛️ Doctoral',title:'Neuropsychological Assessment',src:'Frontiers',url:'https://www.frontiersin.org/journals/human-neuroscience',desc:'Brain-behavior relationships in forensic populations. TBI.',concepts:['Neuropsychological battery selection','Traumatic brain injury assessment','Malingering detection (TOMM, VSVT)','TBI and criminal responsibility','Dementia and competency','Neuroimaging in legal proceedings']},
+{id:60,year:'🏛️ Doctoral',title:'Police Psychology',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'Pre-employment evaluation, fitness for duty, officer-involved shootings.',concepts:['Pre-employment psychological evaluation','Fitness for duty evaluation','Stress and PTSD in officers','Crisis negotiation psychology','Use of force decision-making','Organizational psychology in police']},
+{id:61,year:'🏛️ Doctoral',title:'Forensic Seminar: Cutting-Edge Research',src:'SSRN',url:'https://psyarxiv.com',desc:'PsyArXiv preprints — where new forensic psychology research appears first.',concepts:['Current research in forensic assessment','Emerging risk instruments','Deception detection research','False confession research','Eyewitness reform research','AI and forensic psychology']},
+{id:62,year:'🏛️ Doctoral',title:'Teaching Psychology at the University Level',src:'APA',url:'https://www.apa.org/about/division/div2',desc:'Pedagogy, course design, and academic career development.',concepts:['Course design and learning objectives','Evidence-based teaching methods','Student assessment strategies','Academic publishing and research','Academic job market','Mentoring and advising students']},
+{id:63,year:'🏛️ Doctoral',title:'Consultation & Supervision',src:'APA',url:'https://www.apa.org/about/division/div41',desc:'Supervising trainees, consulting with attorneys and courts.',concepts:['Ethical supervision models','Consultation with legal professionals','Organizational consultation','Supervision documentation','Peer consultation and collegial review','Professional development and self-care']},
+{id:64,year:'⚡ Research Tools',title:'PsyArXiv — Psychology Preprints',src:'Tool',url:'https://psyarxiv.com',desc:'Where forensic psychology research appears 12-18 months before peer-reviewed publication.',concepts:['Search forensic psychology for latest work','Filter by date to see newest','Download PDFs of any preprint free','Follow researchers in your area','Comment and engage with authors','Understand the research pipeline']},
+{id:65,year:'⚡ Research Tools',title:'PubPsych — Free Research Database',src:'Tool',url:'https://www.pubpsych.eu',desc:'Large freely accessible psychological reference database.',concepts:['Search all areas of psychology','Filter results to open access only','Access test instruments and measures','Find book chapters and reviews','Multi-language coverage','Links to full-text when available']},
+{id:66,year:'⚡ Research Tools',title:'Frontiers in Psychology — Open Access Journal',src:'Frontiers',url:'https://www.frontiersin.org/journals/psychology',desc:'Major open access journal — 28 sections including forensic.',concepts:['Set email alerts for forensic psychology','28 subsections covering all specialties','100% free to read all articles','Download PDFs of any article','Filter by article type','Find recent meta-analyses in your area']},
+{id:67,year:'⚡ Research Tools',title:'Google Scholar — Smart Search Setup',src:'Tool',url:'https://scholar.google.com',desc:'Set up weekly email alerts for forensic psychology.',concepts:['Create alerts for key search terms','Search cite: to find citing papers','Use since 2023 to find recent work','Find free PDF versions of any paper','Build your own library in My Library','Follow top researchers in forensics']},
+{id:68,year:'⚡ Research Tools',title:'SSRN — Psychology Working Papers',src:'SSRN',url:'https://ssrn.com/en/index.cfm/psy/',desc:'Social Science Research Network: free papers before formal publication.',concepts:['Browse forensic psychology section','Download working papers for free','Law-psychology interface papers','Pre-publication research access','Author profiles and contact info','Legal scholarship on mental health law']},
+{id:69,year:'⚡ Research Tools',title:'NOBA Project — Free Psychology Modules',src:'NOBA',url:'https://nobaproject.com',desc:'Peer-reviewed, modular psychology textbook. Completely free.',concepts:['Modular: pick any topic you need','Written by leading university professors','Companion to textbook learning','Covers clinical, social, developmental','Downloadable PDFs of each module','Used in 500+ university courses']},
+{id:70,year:'⚡ Research Tools',title:'JASP — Free Statistical Software',src:'Tool',url:'https://jasp-stats.org',desc:'Free, open-source statistics software that rivals SPSS.',concepts:['Download free for Mac and PC','Bayesian and frequentist analyses','Built-in APA-format output','Factor analysis and SEM','ANOVA, regression, t-tests','Learning resources and tutorials built in']},
+{id:71,year:'⚡ Research Tools',title:'Zotero — Free Citation Manager',src:'Tool',url:'https://www.zotero.org',desc:'Captures articles from any database and organizes them into a searchable library.',concepts:['Browser extension captures papers instantly','Auto-generates APA citations','Organize into folders by topic','Syncs across all your devices','Group libraries for collaboration','Integrates with Word for bibliography']},
+{id:72,year:'⚡ Research Tools',title:'APA Division 41 — Psychology & Law',src:'APA',url:'https://ap-ls.org',desc:'American Psychology-Law Society: free guidelines, ethical standards, and resources.',concepts:['Free access to AP-LS newsletters','Graduate student resources and awards','Fellowship and grant opportunities','Annual conference and networking','Forensic specialty guidelines (free PDF)','Early career psychologist programs']},
+{id:73,year:'⚡ Research Tools',title:'LibreTexts Psychology Collection',src:'LibreTexts',url:'https://socialsci.libretexts.org/Bookshelves/Psychology',desc:'Over 100 free, openly licensed psychology textbooks.',concepts:['Browse all psychology textbooks free','Download any book as PDF','Search across all books simultaneously','Annotation tools built in','Instructor ancillaries available','Covers all years freshman to doctoral']},
+{id:74,year:'⚡ Research Tools',title:'OpenStax Full Library',src:'OpenStax',url:'https://openstax.org/subjects',desc:'50+ peer-reviewed free college textbooks from Rice University.',concepts:['Psychology 2e and Introductory Psych','Sociology, Statistics, Anatomy & Physiology','Lifespan Development (2024 edition)','Behavioral Neuroscience (new)','Download PDF, read online, or order print','Instructor resources: slides and test banks']},
+];
 </script>
 <script type="text/babel">
 const {useState,useEffect,useRef}=React;
@@ -214,7 +291,7 @@ function LoginScreen({onLogin,toast}){
           <div style={{fontFamily:'Playfair Display,serif',fontStyle:'italic',fontSize:'1.1rem',color:'rgba(255,255,255,0.5)',marginBottom:'2rem'}}>Alton High School &middot; Graduate 2026</div>
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:'0.8rem'}}>
-          {['AI College Coach','Document Vault','College Tracker','Financial Aid Hub','GPA Tracker'].map(f=>(
+          {['AI College Coach','Study Library','Document Vault','College Tracker','Financial Aid Hub'].map(f=>(
             <div key={f} style={{display:'flex',alignItems:'center',gap:'0.7rem',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)'}}>
               <span style={{color:'var(--gold)'}}>&#x2713;</span> {f}
             </div>
@@ -244,7 +321,16 @@ function LoginScreen({onLogin,toast}){
   );
 }
 
-const NAV_ITEMS=[{id:'home',icon:'\uD83C\uDFE0',label:'Home'},{id:'vault',icon:'\uD83D\uDCC1',label:'Document Vault'},{id:'tracker',icon:'\uD83C\uDF93',label:'College Tracker'},{id:'achievements',icon:'\u2B50',label:'Achievements'},{id:'financial',icon:'\uD83D\uDCB0',label:'Financial Aid'},{id:'gpa',icon:'\uD83D\uDCCA',label:'GPA Reference'},{id:'coach',icon:'\uD83E\uDD16',label:'Coach',special:true}];
+const NAV_ITEMS=[
+  {id:'home',icon:'\uD83C\uDFE0',label:'Home'},
+  {id:'library',icon:'\uD83D\uDCDA',label:'Study Library'},
+  {id:'vault',icon:'\uD83D\uDCC1',label:'Document Vault'},
+  {id:'tracker',icon:'\uD83C\uDF93',label:'College Tracker'},
+  {id:'achievements',icon:'\u2B50',label:'Achievements'},
+  {id:'financial',icon:'\uD83D\uDCB0',label:'Financial Aid'},
+  {id:'gpa',icon:'\uD83D\uDCCA',label:'GPA Reference'},
+  {id:'coach',icon:'\uD83E\uDD16',label:'Coach',special:true}
+];
 
 function Sidebar({page,onNav,user,onSignOut,open}){
   return(
@@ -289,7 +375,6 @@ function HomeModule({onNav,user}){
         <div className="page-sub">Alton High School &middot; Future Dr. Smith</div>
       </div>
       <div className="page-content">
-
         <div className="grad-banner">
           <div className="cap">&#x1F393;</div>
           <div className="grad-banner-text">
@@ -297,22 +382,19 @@ function HomeModule({onNav,user}){
             <div className="grad-banner-sub">Alton High School &middot; Class of 2026 &middot; The journey to Dr. Smith begins</div>
           </div>
         </div>
-
         <div className="stats-row">
           <div className="stat-card"><span className="stat-num">{stats.docs}</span><span className="stat-lbl">Documents</span></div>
           <div className="stat-card"><span className="stat-num">{stats.schools}</span><span className="stat-lbl">Schools Tracked</span></div>
           <div className="stat-card"><span className="stat-num">{stats.achievements}</span><span className="stat-lbl">Achievements</span></div>
         </div>
-
         <div className="info-box" style={{borderLeftColor:'var(--teal)'}}>
           <strong style={{color:'var(--teal)'}}>High School GPA &mdash; Final Transcript Pending</strong>
           High school results are preserved in the GPA Reference as a working record. Official GPA will be confirmed and locked once the final transcript is received and uploaded to the Vault.
         </div>
-
         <div className="section-label">Quick Actions</div>
         <div className="grid3" style={{marginBottom:'1.5rem'}}>
           {[
-            {icon:'\uD83D\uDCCA',title:'GPA Reference',desc:'View high school course history',action:'gpa',color:'var(--teal)'},
+            {icon:'\uD83D\uDCDA',title:'Study Library',desc:'74 free resources, Freshman to PhD',action:'library',color:'var(--teal)'},
             {icon:'\uD83E\uDD16',title:'Ask Coach',desc:'Applications, essays, and more',action:'coach',color:'var(--gold)'},
             {icon:'\uD83D\uDCC1',title:'Upload Document',desc:'Transcripts, recommendation letters',action:'vault',color:'var(--ink)'}
           ].map(a=>(
@@ -323,13 +405,111 @@ function HomeModule({onNav,user}){
             </div>
           ))}
         </div>
-
         <div className="info-box">
           <strong>The Road to Dr. Smith</strong>
           Alton High School Graduate (2026) &#x2192; Bachelor's in Psychology (2026&ndash;2030) &#x2192; Master's Degree (2030&ndash;2032) &#x2192; PhD in Forensic Psychology (2032&ndash;2036) &#x2192; Dr. Smith
         </div>
-
       </div>
+    </div>
+  );
+}
+
+function LibraryModule({onNav}){
+  const[search,setSearch]=useState('');
+  const[yearFilter,setYearFilter]=useState('All');
+  const[selected,setSelected]=useState(null);
+  const filtered=STUDY_TOPICS.filter(t=>{
+    const ms=!search||t.title.toLowerCase().includes(search.toLowerCase())||t.desc.toLowerCase().includes(search.toLowerCase());
+    return ms&&(yearFilter==='All'||t.year===yearFilter);
+  });
+  const counts={};
+  YEARS.forEach(y=>{counts[y]=y==='All'?STUDY_TOPICS.length:STUDY_TOPICS.filter(t=>t.year===y).length;});
+  const srcInfo=t=>SRC[t.src]||SRC.Poster;
+  const yearDesc={
+    '📌 Reference Posters':'SloanMelia built-in forensic psychology reference cards.',
+    '🌱 Freshman':'Wide roots. General education foundation. Every textbook is free.',
+    '🌿 Sophomore':'Core psychology courses required at every program in the country.',
+    '🌳 Junior':'The path narrows toward forensics. Upper-division specialization begins.',
+    '🎓 Senior':'Pre-graduate preparation. Clinical assessment, ethics, and research design.',
+    '🔬 Master’s':'Graduate specialization. Forensic assessment, risk instruments, mental health law.',
+    '🏛️ Doctoral':'Research and dissertation level. Original contribution to knowledge.',
+    '⚡ Research Tools':'Free platforms that separate a good student from a future pioneer.'
+  };
+  return(
+    <div>
+      <div className="page-header">
+        <div className="page-title serif">Academic <em style={{color:'var(--gold)'}}>Library</em> &#x1F4DA;</div>
+        <div className="page-sub">{STUDY_TOPICS.length} free resources &middot; Freshman to Doctorate &middot; OpenStax, LibreTexts, NOBA, APA & more</div>
+      </div>
+      <div className="page-content">
+        <div style={{marginBottom:'1rem'}}><input className="input" placeholder="Search any topic, course, or resource..." value={search} onChange={e=>setSearch(e.target.value)}/></div>
+        <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap',marginBottom:'1.2rem'}}>
+          {YEARS.map(y=>(
+            <button key={y} onClick={()=>setYearFilter(y)} style={{fontFamily:'DM Mono,monospace',fontSize:'0.55rem',letterSpacing:'0.1em',textTransform:'uppercase',padding:'0.35rem 0.8rem',border:`1px solid ${yearFilter===y?YEAR_COLOR[y]||'var(--ink)':'var(--faint)'}`,background:yearFilter===y?'var(--ink)':'transparent',color:yearFilter===y?'#fff':'var(--dim)',cursor:'pointer'}}>
+              {y} <span style={{opacity:0.6}}>({counts[y]||STUDY_TOPICS.length})</span>
+            </button>
+          ))}
+        </div>
+        {yearFilter!=='All'&&yearDesc[yearFilter]&&(
+          <div className="info-box" style={{marginBottom:'1rem',padding:'0.7rem 1rem'}}>
+            <strong style={{color:YEAR_COLOR[yearFilter]||'var(--gold)'}}>{yearFilter}</strong>
+            {' '}{yearDesc[yearFilter]}
+          </div>
+        )}
+        <div style={{fontFamily:'DM Mono,monospace',fontSize:'0.6rem',letterSpacing:'0.1em',color:'var(--dim)',marginBottom:'0.8rem',textTransform:'uppercase'}}>
+          {filtered.length} resource{filtered.length!==1?'s':''}{search?` matching "${search}"`:''}
+        </div>
+        {filtered.length===0?(
+          <div className="empty-state">
+            <div className="empty-icon">&#x1F50D;</div>
+            <div className="empty-text">No resources match your search</div>
+            <button className="btn btn-ghost" onClick={()=>{setSearch('');setYearFilter('All');}}>Clear filters</button>
+          </div>
+        ):(
+          <div className="grid3">
+            {filtered.map(t=>{
+              const si=srcInfo(t);
+              return(
+                <div key={t.id} className="card" style={{borderTop:`3px solid ${YEAR_COLOR[t.year]||'var(--ink)'}`,cursor:'pointer',display:'flex',flexDirection:'column'}} onClick={()=>setSelected(t)}>
+                  <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap',marginBottom:'0.5rem'}}>
+                    <span className={`badge ${YEAR_BADGE[t.year]||'badge-gray'}`} style={{fontSize:'0.48rem'}}>{t.year}</span>
+                    <span className={`badge ${si.badge}`} style={{fontSize:'0.48rem'}}>{si.label}</span>
+                  </div>
+                  <div className="card-title" style={{fontSize:'0.92rem',marginBottom:'0.25rem'}}>{t.title}</div>
+                  <div style={{fontSize:'0.79rem',color:'var(--dim)',lineHeight:1.5,flex:1}}>{t.desc}</div>
+                  <div style={{display:'flex',gap:'0.4rem',marginTop:'0.8rem',flexWrap:'wrap'}}>
+                    <button className="btn btn-ghost btn-sm" style={{paddingLeft:0,fontSize:'0.55rem'}} onClick={e=>{e.stopPropagation();setSelected(t);}}>Study &#x2192;</button>
+                    {t.url&&<button className="btn btn-outline btn-sm" style={{fontSize:'0.55rem'}} onClick={e=>{e.stopPropagation();window.open(t.url,'_blank');}}>Open Free &#x2197;</button>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <Modal open={!!selected} onClose={()=>setSelected(null)} title={selected?.title} wide>
+        {selected&&(()=>{
+          const si=srcInfo(selected);
+          return(
+            <>
+              <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginBottom:'1rem'}}>
+                <span className={`badge ${YEAR_BADGE[selected.year]||'badge-gray'}`}>{selected.year}</span>
+                <span className={`badge ${si.badge}`}>{si.label}</span>
+              </div>
+              <p style={{fontSize:'0.9rem',color:'var(--dim)',marginBottom:'1.2rem',lineHeight:1.65}}>{selected.desc}</p>
+              <div className="section-label">Key Concepts</div>
+              <ul style={{paddingLeft:'1.2rem',marginBottom:'1.5rem'}}>
+                {selected.concepts.map((c,i)=><li key={i} style={{marginBottom:'0.4rem',fontSize:'0.88rem'}}>{c}</li>)}
+              </ul>
+              {selected.url&&<div className="info-box" style={{marginBottom:'1rem'}}><strong>Free Resource</strong><a href={selected.url} target="_blank" rel="noreferrer" style={{color:'var(--gold)',wordBreak:'break-all'}}>{selected.url}</a></div>}
+              <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+                {selected.url&&<a href={selected.url} target="_blank" rel="noreferrer" className="btn btn-gold" style={{textDecoration:'none'}}>Open Free Resource &#x2197;</a>}
+                <button className="btn btn-primary" onClick={()=>{setSelected(null);onNav('coach');}}>&#x1F916; Ask Coach About This</button>
+              </div>
+            </>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }
@@ -530,10 +710,14 @@ function FinancialModule({toast}){
   const[tab,setTab]=useState('fafsa');
   const[openSection,setOpenSection]=useState(null);
   const[scholarships,setScholarships]=useState([]);
+  const[balance529,setBalance529]=useState('');
+  const[targetCost,setTargetCost]=useState('');
   const FAFSA=[
-    {title:'Before You Start',content:<ul><li>Prior year tax returns for parents AND student</li><li>W-2 forms and bank balances</li><li>Social Security numbers</li><li>FSA ID &mdash; create at studentaid.gov</li></ul>},
-    {title:'Key Facts',content:<ul><li>FAFSA opens October 1 each year</li><li>Illinois priority deadline: typically late January &mdash; check isac.org</li><li>FAFSA is FREE &mdash; never pay to file it</li></ul>},
+    {title:'Before You Start',content:<ul><li>Prior year tax returns for parents AND student</li><li>W-2 forms and bank balances</li><li>Social Security numbers</li><li>FSA ID &mdash; create at studentaid.gov</li><li>List of schools to add to FAFSA</li></ul>},
+    {title:'Key Facts',content:<ul><li>FAFSA opens <strong>October 1</strong> each year</li><li>Illinois priority deadline: typically <strong>late January</strong> &mdash; check isac.org</li><li>Student Aid Index (SAI) replaced EFC starting 2024-2025</li><li>FAFSA is FREE &mdash; never pay to file it</li></ul>},
+    {title:'What Counts as Assets',content:<ul><li>Parent assets counted at max <strong>5.64%</strong> toward SAI</li><li>Student assets counted at <strong>20%</strong> &mdash; keep student balances low</li><li>Parent-owned 529 plan: only 5.64% counts</li><li>Primary home equity: does NOT count</li><li>Retirement accounts: do NOT count</li></ul>},
     {title:'Illinois MAP Grant',content:<ul><li>Up to $5,968/year for IL residents with financial need</li><li>SIUE, UIS, and SLU all MAP-eligible</li><li>Renewable each year with re-filed FAFSA</li></ul>},
+    {title:'Understanding Your Award Letter',content:<ul><li>Mix of <strong>grants (free money)</strong>, <strong>loans (pay back)</strong>, and work-study</li><li>Net price = total cost minus GRANTS ONLY</li><li>Contact financial aid offices to negotiate &mdash; it is allowed</li></ul>},
   ];
   const loadS=async()=>{try{const d=await api('scholarships');setScholarships(Array.isArray(d)?d:[]);}catch(e){setScholarships([]);}};
   useEffect(()=>{if(tab==='scholarships')loadS();},[tab]);
@@ -541,21 +725,47 @@ function FinancialModule({toast}){
     try{const s=scholarships.find(x=>x.id===id);if(s)await api('scholarships/'+id,{method:'PUT',body:JSON.stringify({...s,status})});setScholarships(prev=>prev.map(x=>x.id===id?{...x,status}:x));}
     catch(e){}
   };
+  const calc529=()=>{
+    const bal=parseFloat(balance529)||0,annual=parseFloat(targetCost)||0,years=2026-new Date().getFullYear();
+    const projected=bal*Math.pow(1.06,Math.max(0,years)),total4yr=annual*4;
+    return{projected:projected.toFixed(0),total4yr:total4yr.toFixed(0),pct:total4yr>0?Math.min(100,(projected/total4yr)*100).toFixed(0):0};
+  };
   return(
     <div>
-      <div className="page-header"><div className="page-title serif">Financial <em style={{color:'var(--gold)'}}>Aid Hub</em></div><div className="page-sub">FAFSA guide &middot; Scholarship database</div></div>
+      <div className="page-header"><div className="page-title serif">Financial <em style={{color:'var(--gold)'}}>Aid Hub</em></div><div className="page-sub">FAFSA guide &middot; 529 tracker &middot; Scholarship database</div></div>
       <div className="page-content">
         <div className="tabs">
-          {[['fafsa','FAFSA Guide'],['scholarships','Scholarships']].map(([id,label])=>(
+          {[['fafsa','FAFSA Guide'],['529','529 Tracker'],['scholarships','Scholarships']].map(([id,label])=>(
             <div key={id} className={`tab${tab===id?' active':''}`} onClick={()=>setTab(id)}>{label}</div>
           ))}
         </div>
-        {tab==='fafsa'&&FAFSA.map((s,i)=>(
-          <div key={i} className="accordion-item">
-            <div className="accordion-header" onClick={()=>setOpenSection(openSection===i?null:i)}>{s.title}<span>{openSection===i?'\u25B2':'\u25BC'}</span></div>
-            {openSection===i&&<div className="accordion-body">{s.content}</div>}
+        {tab==='fafsa'&&(
+          <div>
+            <div className="info-box" style={{marginBottom:'1.5rem'}}><strong>Illinois Priority Deadline</strong>File your FAFSA as early as possible after October 1. Check isac.org for the exact current year deadline.</div>
+            {FAFSA.map((s,i)=>(
+              <div key={i} className="accordion-item">
+                <div className="accordion-header" onClick={()=>setOpenSection(openSection===i?null:i)}>{s.title}<span>{openSection===i?'\u25B2':'\u25BC'}</span></div>
+                {openSection===i&&<div className="accordion-body">{s.content}</div>}
+              </div>
+            ))}
           </div>
-        ))}
+        )}
+        {tab==='529'&&(
+          <div>
+            <div className="info-box"><strong>Illinois Bright Start 529 Plan</strong>State tax deduction: $10,000/yr single &middot; Earnings grow tax-FREE &middot; FAFSA impact: only 5.64% counts &middot; <a href="https://www.brightstartsavings.com" target="_blank" rel="noreferrer" style={{color:'var(--gold)'}}>brightstartsavings.com &#x2192;</a></div>
+            <div className="grid2">
+              <div>
+                <label className="label">Current 529 Balance ($)</label>
+                <input className="input mb2" type="number" value={balance529} onChange={e=>setBalance529(e.target.value)} placeholder="25000"/>
+                <label className="label">Target School Annual Cost ($)</label>
+                <input className="input" type="number" value={targetCost} onChange={e=>setTargetCost(e.target.value)} placeholder="30000"/>
+              </div>
+              <div className="card">
+                {balance529&&targetCost?(()=>{const{projected,total4yr,pct}=calc529();return<><div style={{fontSize:'2rem',fontFamily:'Playfair Display,serif',fontWeight:900,color:'var(--gold)'}}>{pct}%</div><div style={{fontSize:'0.82rem',color:'var(--dim)',marginBottom:'0.8rem'}}>of projected 4-year costs covered</div><div className="progress-bar mb2"><div className="progress-fill" style={{width:pct+'%'}}/></div><div style={{fontSize:'0.8rem',lineHeight:1.8}}><div>Projected: <strong>${parseInt(projected).toLocaleString()}</strong></div><div>4-yr cost: <strong>${parseInt(total4yr).toLocaleString()}</strong></div><div>Gap: <strong>${Math.max(0,parseInt(total4yr)-parseInt(projected)).toLocaleString()}</strong></div></div></>})():<div style={{color:'var(--dim)',fontSize:'0.85rem'}}>Enter balance and target cost to see projection</div>}
+              </div>
+            </div>
+          </div>
+        )}
         {tab==='scholarships'&&(
           scholarships.length===0?<div className="info-box">No scholarships tracked yet.</div>:
           scholarships.map(s=>(
@@ -585,6 +795,8 @@ function GpaModule({user,toast}){
   const[loading,setLoading]=useState(true);
   const[form,setForm]=useState({course_name:'',grade_letter:'A',credit_hours:1,semester:'Fall 2025',is_ap:false,is_honors:false});
   const[saving,setSaving]=useState(false);
+  const[pasteText,setPasteText]=useState('');
+  const[parsing,setParsing]=useState(false);
   const[tab,setTab]=useState('view');
   const load=async()=>{setLoading(true);try{const d=await api('grades');setGrades(Array.isArray(d)?d:[]);}catch(e){setGrades([]);}setLoading(false);};
   useEffect(()=>{load();},[user]);
@@ -601,6 +813,22 @@ function GpaModule({user,toast}){
     setSaving(false);await load();
   };
   const delGrade=async(id)=>{try{await api('grades/'+id,{method:'DELETE'});}catch(e){}await load();toast('Removed');};
+  const parseTranscript=async()=>{
+    if(!pasteText.trim()){toast('Paste transcript text first');return;}
+    setParsing(true);
+    try{
+      const data=await api('coach',{method:'POST',body:JSON.stringify({messages:[{role:'user',content:`Parse this transcript and return ONLY a JSON array. Each item: course_name, grade_letter, credit_hours (default 1), semester (e.g. "Fall 2024"), is_ap (bool), is_honors (bool).\n\nTranscript:\n${pasteText}\n\nReturn ONLY the JSON array.`}]})}); 
+      const text=data.content||'';
+      const cleaned=text.replace(/```json|```/g,'').trim();
+      const parsed=JSON.parse(cleaned);
+      if(!Array.isArray(parsed)||parsed.length===0){toast('Could not parse \u2014 try adding manually');setParsing(false);return;}
+      const rows=parsed.map(r=>({course_name:r.course_name,grade_letter:r.grade_letter,grade_points:gradeToPoints(r.grade_letter),credit_hours:parseFloat(r.credit_hours)||1,semester:r.semester||'Unknown',grade_year:parseInt((r.semester||'2025').split(' ').pop())||2025,is_ap:!!r.is_ap,is_honors:!!r.is_honors,source:'parsed'}));
+      await Promise.all(rows.map(r=>api('grades',{method:'POST',body:JSON.stringify(r)})));
+      toast(`Imported ${rows.length} courses!`);
+      setPasteText('');setTab('view');await load();
+    }catch(e){toast('Parse failed \u2014 try manual entry');}
+    setParsing(false);
+  };
   const gpaColor=gpa===null?'var(--dim)':gpa>=3.7?'#059669':gpa>=3.3?'#d97706':'#dc2626';
   return(
     <div>
@@ -618,7 +846,7 @@ function GpaModule({user,toast}){
           <div style={{fontSize:'0.85rem',color:'var(--dim)',marginTop:'0.4rem'}}>Working GPA &middot; {grades.filter(g=>g.grade_points!==null).length} courses &middot; Pending final transcript</div>
         </div>
         <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.2rem'}}>
-          {[['view','Course History'],['add','Add Course']].map(([t,l])=>(
+          {[['view','Course History'],['add','Add Course'],['parse','Import Transcript']].map(([t,l])=>(
             <button key={t} onClick={()=>setTab(t)} className="btn btn-sm" style={{background:tab===t?'var(--ink)':'transparent',color:tab===t?'#f0ead8':'var(--dim)',border:'1px solid var(--faint)',fontSize:'0.8rem'}}>{l}</button>
           ))}
         </div>
@@ -629,12 +857,19 @@ function GpaModule({user,toast}){
             <div key={semester} style={{marginBottom:'1.5rem'}}>
               <div className="section-label">{semester} &mdash; Term GPA: {calcGPA(tg)?.toFixed(3)||'N/A'}</div>
               {tg.map(g=>(
-                <div key={g.id} className="card" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0.7rem 1rem',marginBottom:'0.4rem'}}>
+                <div key={g.id} className="card" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0.7rem 1rem',marginBottom:'0.4rem',borderLeft:`3px solid ${g.grade_points>=3.7?'#059669':g.grade_points>=2.7?'#d97706':g.grade_points!==null?'#dc2626':'var(--faint)'}`}}>
                   <div style={{flex:1}}>
-                    <div style={{fontWeight:600,fontSize:'0.9rem'}}>{g.course_name}</div>
-                    <div style={{fontSize:'0.78rem',color:'var(--dim)'}}>{g.credit_hours} cr</div>
+                    <div style={{fontWeight:600,fontSize:'0.9rem'}}>
+                      {g.course_name}
+                      {g.is_ap&&<span style={{marginLeft:'0.4rem',fontSize:'0.7rem',background:'#7c3aed',color:'#fff',padding:'1px 5px',borderRadius:'3px'}}>AP</span>}
+                      {g.is_honors&&<span style={{marginLeft:'0.3rem',fontSize:'0.7rem',background:'#0369a1',color:'#fff',padding:'1px 5px',borderRadius:'3px'}}>H</span>}
+                    </div>
+                    <div style={{fontSize:'0.78rem',color:'var(--dim)'}}>{g.credit_hours} cr &middot; {g.source==='parsed'?'imported':'manual'}</div>
                   </div>
-                  <div style={{fontSize:'1.3rem',fontWeight:700,color:gpaColor,marginRight:'1rem'}}>{g.grade_letter||'N/A'}</div>
+                  <div style={{textAlign:'right',marginRight:'1rem'}}>
+                    <div style={{fontSize:'1.3rem',fontWeight:700,color:g.grade_points>=3.7?'#059669':g.grade_points>=2.7?'#d97706':g.grade_points!==null?'#dc2626':'var(--dim)'}}>{g.grade_letter||'N/A'}</div>
+                    <div style={{fontSize:'0.75rem',color:'var(--dim)'}}>{g.grade_points!==null?g.grade_points.toFixed(1):''}</div>
+                  </div>
                   <button onClick={()=>delGrade(g.id)} className="btn btn-sm" style={{background:'transparent',color:'var(--dim)',border:'1px solid var(--faint)',fontSize:'0.75rem'}}>&#x2715;</button>
                 </div>
               ))}
@@ -648,7 +883,8 @@ function GpaModule({user,toast}){
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.6rem'}}>
                 <div><label className="label">Grade</label>
                   <select className="input" value={form.grade_letter} onChange={e=>setForm(p=>({...p,grade_letter:e.target.value}))}>
-                    {Object.keys(GRADE_POINTS).filter(k=>k!=='P'&&k!=='W'&&k!=='I').map(g=><option key={g} value={g}>{g}</option>)}
+                    {Object.keys(GRADE_POINTS).filter(k=>k!=='P'&&k!=='W'&&k!=='I').map(g=><option key={g} value={g}>{g} ({GRADE_POINTS[g]?.toFixed(1)||'N/A'})</option>)}
+                    <option value="P">P (Pass)</option>
                   </select>
                 </div>
                 <div><label className="label">Credits</label><input className="input" type="number" min="0.5" max="6" step="0.5" value={form.credit_hours} onChange={e=>setForm(p=>({...p,credit_hours:e.target.value}))}/></div>
@@ -658,8 +894,19 @@ function GpaModule({user,toast}){
                   </select>
                 </div>
               </div>
+              <div style={{display:'flex',gap:'1.5rem'}}>
+                <label style={{display:'flex',alignItems:'center',gap:'0.4rem',cursor:'pointer',fontSize:'0.88rem'}}><input type="checkbox" checked={form.is_ap} onChange={e=>setForm(p=>({...p,is_ap:e.target.checked}))}/>AP Course</label>
+                <label style={{display:'flex',alignItems:'center',gap:'0.4rem',cursor:'pointer',fontSize:'0.88rem'}}><input type="checkbox" checked={form.is_honors} onChange={e=>setForm(p=>({...p,is_honors:e.target.checked}))}/>Honors / CP</label>
+              </div>
               <button className="btn btn-gold" onClick={addGrade} disabled={saving}>{saving?'Saving...':'Add Course'}</button>
             </div>
+          </div>
+        )}
+        {tab==='parse'&&(
+          <div>
+            <div className="info-box" style={{marginBottom:'1rem'}}><strong>Import from Transcript</strong>Paste your transcript text below. The AI Coach will extract all courses and grades automatically.</div>
+            <textarea className="input" style={{minHeight:'200px',resize:'vertical',fontFamily:'monospace',fontSize:'0.82rem'}} value={pasteText} onChange={e=>setPasteText(e.target.value)} placeholder="Paste your transcript text here..."/>
+            <button className="btn btn-gold" style={{marginTop:'0.8rem',width:'100%'}} onClick={parseTranscript} disabled={parsing}>{parsing?'Parsing transcript...':'Import with AI Coach'}</button>
           </div>
         )}
       </div>
@@ -668,47 +915,135 @@ function GpaModule({user,toast}){
 }
 
 function CoachModule({toast}){
-  const[messages,setMessages]=useState([{role:'assistant',content:"Hi Sloan! Congratulations on graduating! I'm your Coach powered by Claude. Ask me anything about college applications, essays, financial aid, or forensic psychology. What do you need today?"}]);
+  const[messages,setMessages]=useState([{role:'assistant',content:"Hi Sloan! Congratulations on graduating! I'm your Coach powered by Claude. Ask me anything about college applications, essays, financial aid, forensic psychology, or the Study Library resources. What do you need today?"}]);
   const[input,setInput]=useState('');
   const[loading,setLoading]=useState(false);
+  const[formText,setFormText]=useState('');
+  const[formResult,setFormResult]=useState('');
+  const[essayPrompt,setEssayPrompt]=useState('');
+  const[essayDraft,setEssayDraft]=useState('');
+  const[essayResult,setEssayResult]=useState('');
+  const[essayLoading,setEssayLoading]=useState(false);
+  const[formLoading,setFormLoading]=useState(false);
+  const[essayType,setEssayType]=useState('Common App Personal Statement (650 words)');
+  const[tab,setTab]=useState('chat');
   const bottomRef=useRef();
   useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:'smooth'});},[messages,loading]);
-  const send=async()=>{
+  const getVaultContext=async()=>{
+    try{
+      const[docs,achs,grades]=await Promise.all([api('documents').catch(()=>[]),api('achievements').catch(()=>[]),api('grades').catch(()=>[])]);
+      const docStr=docs?.length?'Uploaded documents: '+docs.map(d=>`${d.name} (${d.category})`).join(', '):'No documents uploaded yet.';
+      const achStr=achs?.length?'Achievements: '+achs.map(a=>`${a.title} (${a.role})`).join(', '):'';
+      const liveGpa=calcGPA(grades||[]);
+      const gpaStr=liveGpa!==null?`Sloan's GPA: ${liveGpa.toFixed(3)} (${(grades||[]).length} courses tracked)`:"\'s GPA: 3.55 UW / 3.79 W";
+      const courseList=grades&&grades.length>0?'Recent courses: '+grades.slice(-5).map(g=>`${g.course_name} (${g.semester})`).join(', '):'';
+      return gpaStr+'\n'+docStr+(achStr?'\n'+achStr:'')+(courseList?'\n'+courseList:'');
+    }catch(e){return 'Vault context unavailable.';}
+  };
+  const callCoach=async(msgs)=>{
+    const vaultContext=await getVaultContext();
+    const data=await api('coach',{method:'POST',body:JSON.stringify({messages:msgs.filter((m,i)=>m.role!=='assistant'||i>0),vaultContext})});
+    return data.content||'No response.';
+  };
+  const sendChat=async()=>{
     if(!input.trim()||loading)return;
     const userMsg={role:'user',content:input.trim()};
     const newMsgs=[...messages,userMsg];
     setMessages(newMsgs);setInput('');setLoading(true);
-    try{
-      const data=await api('coach',{method:'POST',body:JSON.stringify({messages:newMsgs.filter((m,i)=>m.role!=='assistant'||i>0)})});
-      if(data.content)setMessages(p=>[...p,{role:'assistant',content:data.content}]);
-    }catch(e){toast('Coach error: '+e.message,'error');}
+    try{const reply=await callCoach(newMsgs);if(reply)setMessages(p=>[...p,{role:'assistant',content:reply}]);}
+    catch(e){toast('Coach error: '+e.message,'error');}
     setLoading(false);
+  };
+  const analyzeForm=async()=>{
+    if(!formText.trim())return;
+    setFormLoading(true);
+    try{const reply=await callCoach([{role:'user',content:`Analyze this college application form and generate answers using Sloan's real information. Format as:\n[FIELD NAME]\nAnswer: [answer]\n\nForm:\n${formText}`});setFormResult(reply||'');}
+    catch(e){toast('Coach error','error');}
+    setFormLoading(false);
+  };
+  const getEssayHelp=async(mode)=>{
+    setEssayLoading(true);
+    const prompt=mode==='outline'
+      ?`Generate a structured essay outline for Sloan. Essay type: ${essayType}. Prompt: ${essayPrompt||'general personal statement'}`
+      :`Review this essay draft and give specific feedback. Essay type: ${essayType}. Prompt: ${essayPrompt}.\n\nDraft:\n${essayDraft}`;
+    try{const reply=await callCoach([{role:'user',content:prompt}]);setEssayResult(reply||'');}
+    catch(e){toast('Coach error','error');}
+    setEssayLoading(false);
   };
   return(
     <div>
-      <div className="page-header"><div className="page-title serif">Your AI <em style={{color:'var(--gold)'}}>Coach</em> &#x1F916;</div><div className="page-sub">Powered by Claude &middot; Knows your full profile</div></div>
+      <div className="page-header"><div className="page-title serif">Your AI <em style={{color:'var(--gold)'}}>Coach</em> &#x1F916;</div><div className="page-sub">Powered by Claude &middot; Knows your full profile and vault</div></div>
       <div className="page-content">
-        <div className="chat-area">
-          <div className="chat-messages">
-            {messages.map((m,i)=>(
-              <div key={i} className={`chat-bubble ${m.role==='user'?'user':'coach'}`}>
-                {m.content.split('\n').map((line,j)=><div key={j}>{line||'\u00a0'}</div>)}
-              </div>
-            ))}
-            {loading&&<div className="typing chat-bubble coach"><span/><span/><span/></div>}
-            <div ref={bottomRef}/>
-          </div>
-          <div className="chat-input-row">
-            <input className="chat-input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} placeholder="Ask your Coach anything..." disabled={loading}/>
-            <button className="btn btn-gold" onClick={send} disabled={loading||!input.trim()}>Send</button>
-            <button className="btn btn-ghost" onClick={()=>setMessages([messages[0]])}>Clear</button>
-          </div>
-          <div style={{marginTop:'0.5rem',display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
-            {['Fill my Common App activities','What documents am I missing?','Help me write my personal statement','Explain FAFSA to me simply'].map(s=>(
-              <span key={s} style={{fontSize:'0.72rem',padding:'0.25rem 0.7rem',border:'1px solid var(--faint)',cursor:'pointer',color:'var(--dim)'}} onClick={()=>setInput(s)}>{s}</span>
-            ))}
-          </div>
+        <div className="tabs">
+          {[['chat','Chat'],['form','Form Filler'],['essay','Essay Coach']].map(([id,label])=>(
+            <div key={id} className={`tab${tab===id?' active':''}`} onClick={()=>setTab(id)}>{label}</div>
+          ))}
         </div>
+        {tab==='chat'&&(
+          <div className="chat-area">
+            <div className="chat-messages">
+              {messages.map((m,i)=>(
+                <div key={i} className={`chat-bubble ${m.role==='user'?'user':'coach'}`}>
+                  {m.content.split('\n').map((line,j)=><div key={j}>{line||'\u00a0'}</div>)}
+                </div>
+              ))}
+              {loading&&<div className="typing chat-bubble coach"><span/><span/><span/></div>}
+              <div ref={bottomRef}/>
+            </div>
+            <div className="chat-input-row">
+              <input className="chat-input" value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendChat()} placeholder="Ask your Coach anything..." disabled={loading}/>
+              <button className="btn btn-gold" onClick={sendChat} disabled={loading||!input.trim()}>Send</button>
+              <button className="btn btn-ghost" onClick={()=>setMessages([messages[0]])}>Clear</button>
+            </div>
+            <div style={{marginTop:'0.5rem',display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+              {['Fill my Common App activities section','What documents am I missing?','Help me write my personal statement','Explain FAFSA to me simply'].map(s=>(
+                <span key={s} style={{fontSize:'0.72rem',padding:'0.25rem 0.7rem',border:'1px solid var(--faint)',cursor:'pointer',color:'var(--dim)'}} onClick={()=>setInput(s)}>{s}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        {tab==='form'&&(
+          <div>
+            <div style={{background:'#fff8e8',border:'1px solid var(--gold)',padding:'0.8rem 1rem',marginBottom:'1rem',fontSize:'0.82rem'}}>Review all answers before pasting. Always verify school-specific requirements.</div>
+            <label className="label">Paste any college application form, FAFSA section, or scholarship question here</label>
+            <textarea className="input mb2" style={{minHeight:180}} value={formText} onChange={e=>setFormText(e.target.value)} placeholder="Paste the form fields or questions here..."/>
+            <button className="btn btn-gold" onClick={analyzeForm} disabled={formLoading||!formText.trim()}>{formLoading?'Analyzing...':'Analyze & Fill Form'}</button>
+            {formResult&&(
+              <div style={{marginTop:'1.5rem'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.5rem'}}>
+                  <div className="section-label" style={{margin:0}}>Coach-Generated Answers</div>
+                  <button className="btn btn-outline btn-sm" onClick={()=>{navigator.clipboard.writeText(formResult);toast('Copied!');}}>Copy All</button>
+                </div>
+                <div style={{background:'var(--white)',border:'1px solid var(--faint)',padding:'1.2rem',whiteSpace:'pre-wrap',fontFamily:'DM Mono,monospace',fontSize:'0.78rem',lineHeight:1.8}}>{formResult}</div>
+              </div>
+            )}
+          </div>
+        )}
+        {tab==='essay'&&(
+          <div>
+            <div className="mb2"><label className="label">Essay Type</label>
+              <select className="select" value={essayType} onChange={e=>setEssayType(e.target.value)}>
+                {['Common App Personal Statement (650 words)','Why This School Essay (250-650 words)','Scholarship Essay (varies)','Extracurricular Activity Description (150 chars)','Short Answer (100-250 words)'].map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div className="mb2"><label className="label">Essay Prompt</label><textarea className="input" style={{minHeight:80}} value={essayPrompt} onChange={e=>setEssayPrompt(e.target.value)} placeholder="Paste the essay prompt or question here..."/></div>
+            <div className="mb2"><label className="label">Your Draft (optional)</label><textarea className="input" style={{minHeight:120}} value={essayDraft} onChange={e=>setEssayDraft(e.target.value)} placeholder="Paste your draft here to get specific feedback..."/></div>
+            <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+              <button className="btn btn-gold" onClick={()=>getEssayHelp('outline')} disabled={essayLoading}>Get Outline</button>
+              <button className="btn btn-primary" onClick={()=>getEssayHelp('review')} disabled={essayLoading||!essayDraft.trim()}>Review My Draft</button>
+            </div>
+            {essayLoading&&<div className="mt2 mono" style={{fontSize:'0.65rem',color:'var(--gold)',letterSpacing:'0.1em'}}>Coach is thinking...</div>}
+            {essayResult&&(
+              <div style={{marginTop:'1.5rem'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.5rem'}}>
+                  <div className="section-label" style={{margin:0}}>Coach Response</div>
+                  <button className="btn btn-outline btn-sm" onClick={()=>{navigator.clipboard.writeText(essayResult);toast('Copied!');}}>Copy</button>
+                </div>
+                <div style={{background:'var(--white)',border:'1px solid var(--faint)',padding:'1.2rem',whiteSpace:'pre-wrap',fontSize:'0.88rem',lineHeight:1.75}}>{essayResult}</div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -733,6 +1068,7 @@ function App(){
       <Sidebar page={page} onNav={(pg)=>{setPage(pg);setSidebarOpen(false);}} user={user} onSignOut={signOut} open={sidebarOpen}/>
       <div className="main-area" style={{flex:1}}>
         {page==='home'&&<HomeModule {...p} onNav={setPage}/>}
+        {page==='library'&&<LibraryModule {...p} onNav={setPage}/>}
         {page==='vault'&&<VaultModule {...p}/>}
         {page==='tracker'&&<TrackerModule {...p}/>}
         {page==='achievements'&&<AchievementsModule {...p}/>}
