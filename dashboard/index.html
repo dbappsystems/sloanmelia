@@ -111,6 +111,11 @@ textarea.input{resize:vertical;min-height:80px;}
 }
 .info-box{background:var(--cream);border-left:4px solid var(--gold);padding:1rem 1.2rem;font-size:0.88rem;line-height:1.65;margin-bottom:1rem;}
 .info-box strong{display:block;font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;}
+.grad-banner{background:linear-gradient(135deg,var(--ink) 0%,#1a3a1a 100%);border:1px solid var(--gold);padding:1.2rem 1.6rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;}
+.grad-banner .cap{font-size:2rem;flex-shrink:0;}
+.grad-banner-text{flex:1;}
+.grad-banner-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:900;color:var(--gold);line-height:1.2;}
+.grad-banner-sub{font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:0.25rem;}
 </style>
 </head>
 <body>
@@ -206,10 +211,10 @@ function LoginScreen({onLogin,toast}){
         <div style={{marginBottom:'1rem'}}>
           <div className="mono" style={{fontSize:'0.55rem',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(200,146,42,0.8)',marginBottom:'1rem'}}>sloanmelia.com</div>
           <div style={{fontFamily:'Playfair Display,serif',fontSize:'3rem',fontWeight:900,lineHeight:1.05,marginBottom:'0.5rem'}}>Sloan<br/><em style={{color:'var(--gold)'}}>Melia</em></div>
-          <div style={{fontFamily:'Playfair Display,serif',fontStyle:'italic',fontSize:'1.1rem',color:'rgba(255,255,255,0.5)',marginBottom:'2rem'}}>From Senior Year to Dr. Smith</div>
+          <div style={{fontFamily:'Playfair Display,serif',fontStyle:'italic',fontSize:'1.1rem',color:'rgba(255,255,255,0.5)',marginBottom:'2rem'}}>Alton High School &middot; Graduate 2026</div>
         </div>
         <div style={{display:'flex',flexDirection:'column',gap:'0.8rem'}}>
-          {['AI College Coach','Document Vault','College Tracker','Financial Aid Hub','Study Library'].map(f=>(
+          {['AI College Coach','Document Vault','College Tracker','Financial Aid Hub','GPA Tracker'].map(f=>(
             <div key={f} style={{display:'flex',alignItems:'center',gap:'0.7rem',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)'}}>
               <span style={{color:'var(--gold)'}}>&#x2713;</span> {f}
             </div>
@@ -239,7 +244,7 @@ function LoginScreen({onLogin,toast}){
   );
 }
 
-const NAV_ITEMS=[{id:'home',icon:'🏠',label:'Home'},{id:'vault',icon:'📁',label:'Document Vault'},{id:'tracker',icon:'🎓',label:'College Tracker'},{id:'achievements',icon:'⭐',label:'Achievements'},{id:'financial',icon:'💰',label:'Financial Aid'},{id:'gpa',icon:'📊',label:'GPA Tracker'},{id:'coach',icon:'🤖',label:'Coach',special:true}];
+const NAV_ITEMS=[{id:'home',icon:'\uD83C\uDFE0',label:'Home'},{id:'vault',icon:'\uD83D\uDCC1',label:'Document Vault'},{id:'tracker',icon:'\uD83C\uDF93',label:'College Tracker'},{id:'achievements',icon:'\u2B50',label:'Achievements'},{id:'financial',icon:'\uD83D\uDCB0',label:'Financial Aid'},{id:'gpa',icon:'\uD83D\uDCCA',label:'GPA Reference'},{id:'coach',icon:'\uD83E\uDD16',label:'Coach',special:true}];
 
 function Sidebar({page,onNav,user,onSignOut,open}){
   return(
@@ -260,7 +265,7 @@ function Sidebar({page,onNav,user,onSignOut,open}){
       <div className="sidebar-footer">
         <a href="https://sloanmelia.com" target="_blank" rel="noopener noreferrer"
           style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.5rem 0.6rem',marginBottom:'0.5rem',background:'rgba(200,146,42,0.12)',border:'1px solid rgba(200,146,42,0.3)',borderRadius:'6px',textDecoration:'none',color:'var(--gold)',fontSize:'0.78rem',fontWeight:600}}>
-          <span>🌐</span><span>View Public Profile</span><span style={{marginLeft:'auto',opacity:0.6}}>&#x2197;</span>
+          <span>\uD83C\uDF10</span><span>View Public Profile</span><span style={{marginLeft:'auto',opacity:0.6}}>&#x2197;</span>
         </a>
         <div className="sidebar-user">{user?.email}</div>
         {user?.role==='admin'&&<div style={{fontFamily:'DM Mono,monospace',fontSize:'0.52rem',letterSpacing:'0.1em',textTransform:'uppercase',color:'var(--gold)',marginBottom:'0.4rem'}}>&#x26A1; God Mode</div>}
@@ -271,40 +276,59 @@ function Sidebar({page,onNav,user,onSignOut,open}){
 }
 
 function HomeModule({onNav,user}){
-  const[stats,setStats]=useState({docs:0,schools:0,achievements:0,gpa:null});
-  const days=Math.max(0,Math.ceil((new Date('2026-05-15')-new Date())/(1000*60*60*24)));
+  const[stats,setStats]=useState({docs:0,schools:0,achievements:0});
   useEffect(()=>{
-    Promise.all([api('documents').catch(()=>[]),api('colleges').catch(()=>[]),api('achievements').catch(()=>[]),api('grades').catch(()=>[])]).then(([d,c,a,g])=>{
-      setStats({docs:Array.isArray(d)?d.length:0,schools:Array.isArray(c)?c.length:0,achievements:Array.isArray(a)?a.length:0,gpa:calcGPA(Array.isArray(g)?g:[])});
+    Promise.all([api('documents').catch(()=>[]),api('colleges').catch(()=>[]),api('achievements').catch(()=>[])]).then(([d,c,a])=>{
+      setStats({docs:Array.isArray(d)?d.length:0,schools:Array.isArray(c)?c.length:0,achievements:Array.isArray(a)?a.length:0});
     }).catch(()=>{});
   },[user]);
-  const gpaColor=stats.gpa===null?'var(--dim)':stats.gpa>=3.7?'#059669':stats.gpa>=3.3?'#d97706':'#dc2626';
   return(
     <div>
       <div className="page-header">
         <div className="page-title serif">Welcome back, <em style={{color:'var(--gold)'}}>Sloan</em> &#x1F44B;</div>
-        <div className="page-sub">Class of 2026 · Alton High School · Future Dr. Smith</div>
+        <div className="page-sub">Alton High School &middot; Future Dr. Smith</div>
       </div>
       <div className="page-content">
+
+        <div className="grad-banner">
+          <div className="cap">&#x1F393;</div>
+          <div className="grad-banner-text">
+            <div className="grad-banner-title">Proud Graduate of 2026</div>
+            <div className="grad-banner-sub">Alton High School &middot; Class of 2026 &middot; The journey to Dr. Smith begins</div>
+          </div>
+        </div>
+
         <div className="stats-row">
-          <div className="stat-card" style={{borderTopColor:gpaColor}}><span className="stat-num" style={{color:gpaColor}}>{stats.gpa!==null?stats.gpa.toFixed(3):'3.550'}</span><span className="stat-lbl">Cumulative GPA</span></div>
           <div className="stat-card"><span className="stat-num">{stats.docs}</span><span className="stat-lbl">Documents</span></div>
           <div className="stat-card"><span className="stat-num">{stats.schools}</span><span className="stat-lbl">Schools Tracked</span></div>
-          <div className="stat-card" style={{borderTopColor:'var(--gold)'}}><span className="stat-num">{days}</span><span className="stat-lbl">Days to Graduation</span></div>
+          <div className="stat-card"><span className="stat-num">{stats.achievements}</span><span className="stat-lbl">Achievements</span></div>
         </div>
+
+        <div className="info-box" style={{borderLeftColor:'var(--teal)'}}>
+          <strong style={{color:'var(--teal)'}}>High School GPA &mdash; Final Transcript Pending</strong>
+          High school results are preserved in the GPA Reference as a working record. Official GPA will be confirmed and locked once the final transcript is received and uploaded to the Vault.
+        </div>
+
         <div className="section-label">Quick Actions</div>
         <div className="grid3" style={{marginBottom:'1.5rem'}}>
-          {[{icon:'📊',title:'Update GPA',action:'gpa',color:'#059669'},{icon:'🤖',title:'Ask Coach',action:'coach',color:'var(--gold)'},{icon:'📁',title:'Upload Document',action:'vault',color:'var(--teal)'}].map(a=>(
+          {[
+            {icon:'\uD83D\uDCCA',title:'GPA Reference',desc:'View high school course history',action:'gpa',color:'var(--teal)'},
+            {icon:'\uD83E\uDD16',title:'Ask Coach',desc:'Applications, essays, and more',action:'coach',color:'var(--gold)'},
+            {icon:'\uD83D\uDCC1',title:'Upload Document',desc:'Transcripts, recommendation letters',action:'vault',color:'var(--ink)'}
+          ].map(a=>(
             <div key={a.action} className="card" style={{borderTop:`3px solid ${a.color}`,cursor:'pointer'}} onClick={()=>onNav(a.action)}>
               <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>{a.icon}</div>
               <div className="card-title" style={{fontSize:'0.97rem'}}>{a.title}</div>
+              <div style={{fontSize:'0.82rem',color:'var(--dim)',marginTop:'0.2rem'}}>{a.desc}</div>
             </div>
           ))}
         </div>
+
         <div className="info-box">
-          <strong>Your Path to Dr. Smith</strong>
-          Senior Year (now) &#x2192; Bachelor's in Psychology (2026-2030) &#x2192; Master's (2030-2032) &#x2192; PhD in Forensic Psychology (2032-2036) &#x2192; Dr. Smith
+          <strong>The Road to Dr. Smith</strong>
+          Alton High School Graduate (2026) &#x2192; Bachelor's in Psychology (2026&ndash;2030) &#x2192; Master's Degree (2030&ndash;2032) &#x2192; PhD in Forensic Psychology (2032&ndash;2036) &#x2192; Dr. Smith
         </div>
+
       </div>
     </div>
   );
@@ -471,7 +495,7 @@ function AchievementsModule({toast}){
       </div>
       <div className="page-content">
         {loading?<div className="empty-state"><div className="typing"><span/><span/><span/></div></div>:
-          items.length===0?<div className="empty-state"><div className="empty-icon">⭐</div><div className="empty-text">No achievements yet</div></div>:
+          items.length===0?<div className="empty-state"><div className="empty-icon">&#x2B50;</div><div className="empty-text">No achievements yet</div></div>:
           items.map(a=>(
             <div key={a.id} className="card" style={{marginBottom:'1rem',borderTop:'3px solid var(--ink)'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
@@ -507,8 +531,8 @@ function FinancialModule({toast}){
   const[openSection,setOpenSection]=useState(null);
   const[scholarships,setScholarships]=useState([]);
   const FAFSA=[
-    {title:'Before You Start',content:<ul><li>Prior year tax returns for parents AND student</li><li>W-2 forms and bank balances</li><li>Social Security numbers</li><li>FSA ID — create at studentaid.gov</li></ul>},
-    {title:'Key Facts',content:<ul><li>FAFSA opens October 1 each year</li><li>Illinois priority deadline: typically late January — check isac.org</li><li>FAFSA is FREE — never pay to file it</li></ul>},
+    {title:'Before You Start',content:<ul><li>Prior year tax returns for parents AND student</li><li>W-2 forms and bank balances</li><li>Social Security numbers</li><li>FSA ID &mdash; create at studentaid.gov</li></ul>},
+    {title:'Key Facts',content:<ul><li>FAFSA opens October 1 each year</li><li>Illinois priority deadline: typically late January &mdash; check isac.org</li><li>FAFSA is FREE &mdash; never pay to file it</li></ul>},
     {title:'Illinois MAP Grant',content:<ul><li>Up to $5,968/year for IL residents with financial need</li><li>SIUE, UIS, and SLU all MAP-eligible</li><li>Renewable each year with re-filed FAFSA</li></ul>},
   ];
   const loadS=async()=>{try{const d=await api('scholarships');setScholarships(Array.isArray(d)?d:[]);}catch(e){setScholarships([]);}};
@@ -519,7 +543,7 @@ function FinancialModule({toast}){
   };
   return(
     <div>
-      <div className="page-header"><div className="page-title serif">Financial <em style={{color:'var(--gold)'}}>Aid Hub</em></div><div className="page-sub">FAFSA guide · Scholarship database</div></div>
+      <div className="page-header"><div className="page-title serif">Financial <em style={{color:'var(--gold)'}}>Aid Hub</em></div><div className="page-sub">FAFSA guide &middot; Scholarship database</div></div>
       <div className="page-content">
         <div className="tabs">
           {[['fafsa','FAFSA Guide'],['scholarships','Scholarships']].map(([id,label])=>(
@@ -528,7 +552,7 @@ function FinancialModule({toast}){
         </div>
         {tab==='fafsa'&&FAFSA.map((s,i)=>(
           <div key={i} className="accordion-item">
-            <div className="accordion-header" onClick={()=>setOpenSection(openSection===i?null:i)}>{s.title}<span>{openSection===i?'▲':'▼'}</span></div>
+            <div className="accordion-header" onClick={()=>setOpenSection(openSection===i?null:i)}>{s.title}<span>{openSection===i?'\u25B2':'\u25BC'}</span></div>
             {openSection===i&&<div className="accordion-body">{s.content}</div>}
           </div>
         ))}
@@ -580,23 +604,30 @@ function GpaModule({user,toast}){
   const gpaColor=gpa===null?'var(--dim)':gpa>=3.7?'#059669':gpa>=3.3?'#d97706':'#dc2626';
   return(
     <div>
-      <div className="page-header"><div className="page-title serif">GPA <em style={{color:'var(--gold)'}}>Tracker</em></div><div className="page-sub">Cumulative GPA calculated from all courses</div></div>
+      <div className="page-header">
+        <div className="page-title serif">High School <em style={{color:'var(--gold)'}}>GPA Reference</em></div>
+        <div className="page-sub">Alton High School &middot; Class of 2026 &middot; Final transcript pending</div>
+      </div>
       <div className="page-content">
+        <div className="info-box" style={{borderLeftColor:'var(--teal)'}}>
+          <strong style={{color:'var(--teal)'}}>Reference Record &mdash; Final Transcript Pending</strong>
+          This is a working reference of Sloan's high school course history. Official GPA will be confirmed and locked once the final transcript is received and uploaded to the Vault.
+        </div>
         <div className="card" style={{borderTop:`4px solid ${gpaColor}`,marginBottom:'1.5rem',textAlign:'center',padding:'1.5rem'}}>
           <div style={{fontSize:'3.5rem',fontWeight:900,color:gpaColor,fontFamily:'serif',lineHeight:1}}>{gpa!==null?gpa.toFixed(3):'3.550'}</div>
-          <div style={{fontSize:'0.85rem',color:'var(--dim)',marginTop:'0.4rem'}}>Cumulative GPA · {grades.filter(g=>g.grade_points!==null).length} courses</div>
+          <div style={{fontSize:'0.85rem',color:'var(--dim)',marginTop:'0.4rem'}}>Working GPA &middot; {grades.filter(g=>g.grade_points!==null).length} courses &middot; Pending final transcript</div>
         </div>
         <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.2rem'}}>
-          {[['view','View Courses'],['add','Add Course']].map(([t,l])=>(
+          {[['view','Course History'],['add','Add Course']].map(([t,l])=>(
             <button key={t} onClick={()=>setTab(t)} className="btn btn-sm" style={{background:tab===t?'var(--ink)':'transparent',color:tab===t?'#f0ead8':'var(--dim)',border:'1px solid var(--faint)',fontSize:'0.8rem'}}>{l}</button>
           ))}
         </div>
         {tab==='view'&&(
           loading?<div style={{color:'var(--dim)'}}>Loading...</div>:
-          grades.length===0?<div className="info-box">No courses yet. Use Add Course to get started.</div>:
+          grades.length===0?<div className="info-box">No courses yet. Use Add Course to build the reference record.</div>:
           Object.entries(byTerm).sort().map(([semester,tg])=>(
             <div key={semester} style={{marginBottom:'1.5rem'}}>
-              <div className="section-label">{semester} — Term GPA: {calcGPA(tg)?.toFixed(3)||'N/A'}</div>
+              <div className="section-label">{semester} &mdash; Term GPA: {calcGPA(tg)?.toFixed(3)||'N/A'}</div>
               {tg.map(g=>(
                 <div key={g.id} className="card" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0.7rem 1rem',marginBottom:'0.4rem'}}>
                   <div style={{flex:1}}>
@@ -637,7 +668,7 @@ function GpaModule({user,toast}){
 }
 
 function CoachModule({toast}){
-  const[messages,setMessages]=useState([{role:'assistant',content:"Hi Sloan! I'm your Coach powered by Claude. Ask me anything about applications, essays, financial aid, or forensic psychology. What do you need today?"}]);
+  const[messages,setMessages]=useState([{role:'assistant',content:"Hi Sloan! Congratulations on graduating! I'm your Coach powered by Claude. Ask me anything about college applications, essays, financial aid, or forensic psychology. What do you need today?"}]);
   const[input,setInput]=useState('');
   const[loading,setLoading]=useState(false);
   const bottomRef=useRef();
@@ -655,7 +686,7 @@ function CoachModule({toast}){
   };
   return(
     <div>
-      <div className="page-header"><div className="page-title serif">Your AI <em style={{color:'var(--gold)'}}>Coach</em> &#x1F916;</div><div className="page-sub">Powered by Claude · Knows your full profile</div></div>
+      <div className="page-header"><div className="page-title serif">Your AI <em style={{color:'var(--gold)'}}>Coach</em> &#x1F916;</div><div className="page-sub">Powered by Claude &middot; Knows your full profile</div></div>
       <div className="page-content">
         <div className="chat-area">
           <div className="chat-messages">
