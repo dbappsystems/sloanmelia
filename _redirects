@@ -1,11 +1,14 @@
 # Cloudflare Pages redirects
 
-# Dashboard / App — serve app.html directly, no rewrite tricks
-/dashboard           /app.html             302
-/dashboard.html      /app.html             302
+# Primary dashboard route - serve app.html at /dashboard
+/dashboard           /app.html             200
+
+# All app.html references go to /dashboard
+/app                 /dashboard            302
+/app.html            /dashboard            302
 
 # Study Library redirects
-/study-library.html  /app.html             302
-/studylibrary.html   /app.html             302
-/studylibrary        /app.html             302
-/study-library       /app.html             302
+/study-library.html  /dashboard            302
+/studylibrary.html   /dashboard            302
+/studylibrary        /dashboard            302
+/study-library       /dashboard            302
