@@ -1,7 +1,6 @@
-# Cloudflare Pages redirects (replaces netlify.toml)
+# Cloudflare Pages redirects
 
-# Dashboard / App
-/app                 /app.html             200
+# Dashboard / App — serve app.html directly, no rewrite tricks
 /dashboard           /app.html             302
 /dashboard.html      /app.html             302
 
