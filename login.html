@@ -89,7 +89,7 @@ body::before{content:'';position:fixed;inset:0;
 
       <div class="field">
         <label>Password</label>
-        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password"
+        <input type="password" id="signin-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"
           onkeydown="if(event.key==='Enter') handleSignIn()">
       </div>
 
@@ -97,20 +97,18 @@ body::before{content:'';position:fixed;inset:0;
     </div>
 
     <div class="card-footer">
-      <a href="/" class="back-link">← Back to <em>sloanmelia.com</em></a>
+      <a href="/" class="back-link">&larr; Back to <em>sloanmelia.com</em></a>
     </div>
 
   </div>
 </div>
 
 <script>
-// ═══ CHECK EXISTING SESSION ═══
 window.addEventListener('load', () => {
   const token = localStorage.getItem('sm_token');
-  if (token) window.location.href = '/app.html';
+  if (token) window.location.href = '/dashboard';
 });
 
-// ═══ HELPERS ═══
 function showMsg(text, type) {
   const el = document.getElementById('msg-signin');
   el.textContent = text;
@@ -122,7 +120,6 @@ function setLoading(loading) {
   btn.innerHTML = loading ? '<span class="loader"></span>' : 'Sign In';
 }
 
-// ═══ SIGN IN → Cloudflare Worker ═══
 async function handleSignIn() {
   const email    = document.getElementById('signin-email').value.trim();
   const password = document.getElementById('signin-password').value;
@@ -151,9 +148,10 @@ async function handleSignIn() {
     localStorage.setItem('sm_token',  data.token);
     localStorage.setItem('sm_userId', data.userId);
     localStorage.setItem('sm_email',  data.email);
+    localStorage.setItem('sm_role',   data.role || 'student');
 
-    showMsg('✓ Signed in! Loading your dashboard...', 'success');
-    setTimeout(() => window.location.href = '/app.html', 700);
+    showMsg('Signed in! Loading your dashboard...', 'success');
+    setTimeout(() => window.location.href = '/dashboard', 700);
 
   } catch (e) {
     setLoading(false);
